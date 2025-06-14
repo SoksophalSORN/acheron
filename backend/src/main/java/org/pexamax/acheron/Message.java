@@ -25,4 +25,16 @@ class Message {
         this.encContent = encContent;
         this.digitalSignature = digitalSignature;
     }
+    
+    public long messageID() { return this.messageID; }
+    public void messageID(long messageID) { this.messageID = messageID; }
+
+    public int conversationID() { return this.conversationID; }
+    public void conversationID(int conversationID) { this.conversationID = conversationID; }
+
+    public int destructTime() { return this.destructTime; }
+    public void destructTime(int destructTime) { this.destructTime = destructTime; }
+
+    public Instant sentTime() { return this.sentTime; } 
+    public void sentTime(Instant sentTime) { this.sentTime = sentTime; } 
 }
