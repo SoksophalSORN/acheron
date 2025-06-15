@@ -16,16 +16,23 @@ class Message {
     private String digitalSignature;
 
     public Message(int conversationID, int senderID, String contentType, byte[] encContent, String digitalSignature, int destructTime) {
-        messageID = lastMessageID++;
-        this.conversationID = conversationID;
-        this.destructTime = destructTime;
-        this.sentTime = Instant.now();
-        this.senderID = senderID;
-        this.contentType = contentType;
-        this.encContent = encContent;
-        this.digitalSignature = digitalSignature;
+        // messageID = lastMessageID++;
+        // this.conversationID = conversationID;
+        // this.destructTime = destructTime;
+        // this.sentTime = Instant.now();
+        // this.senderID = senderID;
+        // this.contentType = contentType;
+        // this.encContent = encContent;
+        // this.digitalSignature = digitalSignature;
+        this.messageID(lastMessageID++);
+        this.conversationID(conversationID);
+        this.destructTime(destructTime);
+        this.sentTime(Instant.now());
+        this.contentType(contentType);
+        this.encContent(encContent);
+        this.digitalSignature(digitalSignature);
     }
-    
+
     public long messageID() { return this.messageID; }
     public void messageID(long messageID) { this.messageID = messageID; }
 
@@ -37,4 +44,19 @@ class Message {
 
     public Instant sentTime() { return this.sentTime; } 
     public void sentTime(Instant sentTime) { this.sentTime = sentTime; } 
+
+    public int senderID() { return this.senderID; }
+    public void senderID(int senderID) { this.senderID = senderID; }
+
+    public String contentType() { return this.contentType; }
+    public void contentType(String contentType) { this.contentType = contentType; }
+    
+    public byte[] encContent() { return this.encContent; }
+    public void encContent(byte[] encContent) { this.encContent = encContent; }
+    
+    public String digitalSignature() { return this.digitalSignature; }
+    public void digitalSignature(String digitalSignature) { this.digitalSignature = digitalSignature; }
+
+    public Instant receivedTime() { return this.receivedTime; };
+    public void receivedTime(Instant receivedTime) { this.receivedTime = receivedTime; };
 }
