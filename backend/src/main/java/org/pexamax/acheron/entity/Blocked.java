@@ -4,14 +4,13 @@ package org.pexamax.acheron.entity;
 import java.time.Instant;
 import java.util.UUID;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.*;
 
 @Entity
 class Blocked {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long blockID; // Auto-generated and auto-incremented by JPA
 
     private UUID blockerID; 

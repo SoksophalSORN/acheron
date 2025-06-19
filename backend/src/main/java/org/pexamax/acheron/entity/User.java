@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-class User {
+public class User { // Made public because it is used in other packages
     // private static int lastUserID = 0;  // Replace with value from DB
 
     @Id
