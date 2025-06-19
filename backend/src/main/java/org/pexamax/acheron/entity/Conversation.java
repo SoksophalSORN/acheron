@@ -20,6 +20,7 @@ class Conversation {
     private String user2EncSharedSecret;
     private Instant createdTimestamp;
     private Instant lastMessageSentTimestamp;
+    private UUID blockerID;
 
     public Conversation(UUID user1ID, UUID user2ID, String user1EncSharedSecret, String user2EncSharedSecret) {
         // conversationID = lastConversationID++;
@@ -61,4 +62,7 @@ class Conversation {
 
     public Instant getLastMessageSentTimestamp() { return this.lastMessageSentTimestamp; }
     public void setLastMessageSentTimestamp(Instant lastMessageSentTimestamp) { this.lastMessageSentTimestamp = lastMessageSentTimestamp; }
+
+    public UUID getBlockerID() { return this.blockerID; }
+    public void setBlockerID(UUID blockerID) { this.blockerID = blockerID; }
 }
