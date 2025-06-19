@@ -27,32 +27,32 @@ public class User { // Made public because it is used in other packages
         // this.publicKey = publicKey;
         // this.encPrivateKey = encPrivateKey;
         // this.userID(lastUserID++);
-        this.username(username);
-        this.email(email);
-        this.emailVerified(false);
-        this.passwordHash(passwordHash);
-        this.publicKey(publicKey);
-        this.encPrivateKey(encPrivateKey);
+        this.setUsername(username);
+        this.setEmail(email);
+        this.setEmailVerified(false);
+        this.setPasswordHash(passwordHash);
+        this.setPublicKey(publicKey);
+        this.setEncPrivateKey(encPrivateKey);
     }
     
-    public UUID userID() { return userID; }
-    public void userID(UUID userID) { this.userID = userID; }
+    public UUID getUserID() { return userID; }
+    public void setUserID(UUID userID) { this.userID = userID; }
 
-    public String username() { return username; }
-    public void username(String username) { this.username = username; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public String email() { return email; }
-    public void email(String email) { this.email = email; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public boolean emailVerified() { return emailVerified; }
-    public void emailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+    public boolean getEmailVerified() { return emailVerified; }
+    public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
 
-    public String passwordHash() { return passwordHash; }
-    public void passwordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-    public String publicKey() { return publicKey; }
-    public void publicKey(String publicKey) { this.publicKey = publicKey; }
+    public String getPublicKey() { return publicKey; }
+    public void setPublicKey(String publicKey) { this.publicKey = publicKey; }
 
-    public String encPrivateKey() { return encPrivateKey; }
-    public void encPrivateKey(String encPrivateKey) { this.encPrivateKey = encPrivateKey; }
+    public String getEncPrivateKey() { return encPrivateKey; }
+    public void setEncPrivateKey(String encPrivateKey) { this.encPrivateKey = encPrivateKey; }
 }
