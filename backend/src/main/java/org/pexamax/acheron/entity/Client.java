@@ -24,26 +24,26 @@ class Client {
         // this.sessionTokenExpiry = sessionTokenExpiry;
         // this.clientTokenExpiry = clientTokenExpiry;
         // this.clientID(lastclientID++);
-        this.sessionToken(sessionToken);
-        this.clientToken(clientToken);
-        this.sessionTokenExpiry(sessionTokenExpiry);
-        this.clientTokenExpiry(clientTokenExpiry);
+        this.setSessionToken(sessionToken);
+        this.setClientToken(clientToken);
+        this.setSessionTokenExpiry(sessionTokenExpiry);
+        this.setClientTokenExpiry(clientTokenExpiry);
     }
     
     // Getters & Setters
-    public String sessionToken() { return this.sessionToken; }
-    public void sessionToken(String sessionToken) { this.sessionToken = sessionToken; }
+    public String getSessionToken() { return this.sessionToken; }
+    public void setSessionToken(String sessionToken) { this.sessionToken = sessionToken; }
 
-    public Long clientID() { return this.clientID; }
-    public void clientID(Long clientID) { this.clientID = clientID; }
+    public Long getClientID() { return this.clientID; }
+    public void setClientID(Long clientID) { this.clientID = clientID; }
 
-    public String clientToken() { return this.clientToken; }
-    public void clientToken(String clientToken) { this.clientToken = clientToken; }
+    public String getClientToken() { return this.clientToken; }
+    public void setClientToken(String clientToken) { this.clientToken = clientToken; }
 
-    public Instant sessionTokenExpiry() { return this.sessionTokenExpiry; }
-    public void sessionTokenExpiry(Instant sessionTokenExpiry) { this.sessionTokenExpiry = sessionTokenExpiry; }
+    public Instant getSessionTokenExpiry() { return this.sessionTokenExpiry; }
+    public void setSessionTokenExpiry(Instant sessionTokenExpiry) { this.sessionTokenExpiry = sessionTokenExpiry; }
 
-    public Instant clientTokenExpiry() { return this.clientTokenExpiry; }
-    public void clientTokenExpiry(Instant clientTokenExpiry) { this.clientTokenExpiry = clientTokenExpiry; }
+    public Instant getClientTokenExpiry() { return this.clientTokenExpiry; }
+    public void setClientTokenExpiry(Instant clientTokenExpiry) { this.clientTokenExpiry = clientTokenExpiry; }
 
 }
