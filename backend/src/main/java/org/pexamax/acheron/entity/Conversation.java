@@ -19,6 +19,7 @@ class Conversation {
     private String user1EncSharedSecret;
     private String user2EncSharedSecret;
     private Instant createdTimestamp;
+    private Instant lastMessageSentTimestamp;
 
     public Conversation(UUID user1ID, UUID user2ID, String user1EncSharedSecret, String user2EncSharedSecret) {
         // conversationID = lastConversationID++;
@@ -44,8 +45,7 @@ class Conversation {
     public boolean getHidden() { return this.hidden; }
     public void setHidden(boolean hidden) { this.hidden = hidden; }
 
-    public UUID getUser1ID() { return this.user1ID; }
-    public void setUser1ID(UUID user1ID) { this.user1ID = user1ID; }
+    public UUID getUser1ID() { return this.user1ID; } public void setUser1ID(UUID user1ID) { this.user1ID = user1ID; }
 
     public UUID getUser2ID() { return this.user2ID; }
     public void setUser2ID(UUID user2ID) { this.user2ID = user2ID; }
@@ -58,4 +58,7 @@ class Conversation {
 
     public Instant getCreatedTimestamp() { return this.createdTimestamp; }
     public void setCreatedTimestamp(Instant createdTimestamp) { this.createdTimestamp = createdTimestamp; }
+
+    public Instant getLastMessageSentTimestamp() { return this.lastMessageSentTimestamp; }
+    public void setLastMessageSentTimestamp(Instant lastMessageSentTimestamp) { this.lastMessageSentTimestamp = lastMessageSentTimestamp; }
 }
