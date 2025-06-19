@@ -17,21 +17,21 @@ class Requests {
     Instant requestTimestamp;
 
     public Requests(UUID requester, UUID requestee) {
-        this.requesterID(requester);
-        this.requesteeID(requestee);
-        requestTimestamp(Instant.now());
+        this.setRequesterID(requester);
+        this.setRequesteeID(requestee);
+        this.setRequestTimestamp(Instant.now());
     }
 
-    public Long requestID() { return this.requestID; }
-    public void requestID(Long requestID) { this.requestID = requestID; }
+    public Long getRequestID() { return this.requestID; }
+    public void setRequestID(Long requestID) { this.requestID = requestID; }
 
-    public UUID requesterID() { return this.requesterID; }
-    public void requesterID(UUID requesterID) { this.requesterID = requesterID; }
+    public UUID getRequesterID() { return this.requesterID; }
+    public void setRequesterID(UUID requesterID) { this.requesterID = requesterID; }
 
-    public UUID requesteeID() { return this.requesteeID; }
-    public void requesteeID(UUID requesteeID) { this.requesteeID = requesteeID; }
+    public UUID getRequesteeID() { return this.requesteeID; }
+    public void setRequesteeID(UUID requesteeID) { this.requesteeID = requesteeID; }
 
-    public Instant requestTimestamp() { return this.requestTimestamp; }
-    public void requestTimestamp(Instant requestTimestamp) { this.requestTimestamp = requestTimestamp; }
+    public Instant getRequestTimestamp() { return this.requestTimestamp; }
+    public void setRequestTimestamp(Instant requestTimestamp) { this.requestTimestamp = requestTimestamp; }
 
 }
