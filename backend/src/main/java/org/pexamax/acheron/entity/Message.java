@@ -32,38 +32,39 @@ class Message {
         // this.encContent = encContent;
         // this.digitalSignature = digitalSignature;
         // this.messageID(lastMessageID++);
-        this.conversationID(conversationID);
-        this.destructTime(destructTime);
-        this.sentTime(Instant.now());
-        this.contentType(contentType);
-        this.encContent(encContent);
-        this.digitalSignature(digitalSignature);
+        this.setConversationID(conversationID);
+        this.setDestructTime(destructTime);
+        this.setSentTime(Instant.now());
+        this.setContentType(contentType);
+        this.setEncContent(encContent);
+        this.setDigitalSignature(digitalSignature);
     }
 
-    public long messageID() { return this.messageID; }
-    public void messageID(long messageID) { this.messageID = messageID; }
+    public long getMessageID() { return this.messageID; }
+    public void setMessageID(long messageID) { this.messageID = messageID; }
 
-    public Long conversationID() { return this.conversationID; }
-    public void conversationID(Long conversationID) { this.conversationID = conversationID; }
+    public Long getConversationID() { return this.conversationID; }
+    public void setConversationID(Long conversationID) { this.conversationID = conversationID; }
 
-    public int destructTime() { return this.destructTime; }
-    public void destructTime(int destructTime) { this.destructTime = destructTime; }
+    public int getDestructTime() { return this.destructTime; }
+    public void setDestructTime(int destructTime) { this.destructTime = destructTime; }
 
-    public Instant sentTime() { return this.sentTime; } 
-    public void sentTime(Instant sentTime) { this.sentTime = sentTime; } 
+    public Instant getSentTime() { return this.sentTime; } 
+    public void setSentTime(Instant sentTime) { this.sentTime = sentTime; } 
 
-    public UUID senderID() { return this.senderID; }
-    public void senderID(UUID senderID) { this.senderID = senderID; }
+    public UUID getSenderID() { return this.senderID; }
+    public void setSenderID(UUID senderID) { this.senderID = senderID; }
 
-    public String contentType() { return this.contentType; }
-    public void contentType(String contentType) { this.contentType = contentType; }
+    public String getContentType() { return this.contentType; }
+    public void setContentType(String contentType) { this.contentType = contentType; }
     
-    public byte[] encContent() { return this.encContent; }
-    public void encContent(byte[] encContent) { this.encContent = encContent; }
+    public byte[] getEncContent() { return this.encContent; }
+    public void setEncContent(byte[] encContent) { this.encContent = encContent; }
     
-    public String digitalSignature() { return this.digitalSignature; }
-    public void digitalSignature(String digitalSignature) { this.digitalSignature = digitalSignature; }
+    public String getDigitalSignature() { return this.digitalSignature; }
+    public void setDigitalSignature(String digitalSignature) { this.digitalSignature = digitalSignature; }
 
-    public Instant readTime() { return this.readTime; };
-    public void readTime(Instant readTime) { this.readTime = readTime; };
+    public Instant getReadTime() { return this.readTime; };
+    public void setReadTime(Instant readTime) { this.readTime = readTime; };
+
 }
