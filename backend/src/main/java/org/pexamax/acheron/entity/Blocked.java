@@ -18,21 +18,21 @@ class Blocked {
     private Instant blockedTimestamp;
 
     public Blocked(UUID blockerID, UUID blockedID) {
-        this.blockerID(blockerID);
-        this.blockedID(blockedID);
-        this.blockedTimestamp(Instant.now());
+        this.setBlockerID(blockerID);
+        this.setBlockedID(blockedID);
+        this.setBlockedTimestamp(Instant.now());
     }
 
-    public Long blockID() { return this.blockID; }
-    public void blockID(Long blockID) { this.blockID = blockID; }
+    public Long getBlockID() { return this.blockID; }
+    public void setBlockID(Long blockID) { this.blockID = blockID; }
 
-    public UUID blockerID() { return this.blockerID; }
-    public void blockerID(UUID blockerID) { this.blockerID = blockerID; }
+    public UUID getBlockerID() { return this.blockerID; }
+    public void setBlockerID(UUID blockerID) { this.blockerID = blockerID; }
 
-    public UUID blockedID() { return this.blockedID; }
-    public void blockedID(UUID blockedID) { this.blockedID = blockedID; }
+    public UUID getBlockedID() { return this.blockedID; }
+    public void setBlockedID(UUID blockedID) { this.blockedID = blockedID; }
 
-    public Instant blockedTimestamp() { return this.blockedTimestamp; }
-    public void blockedTimestamp(Instant blockedTimestamp) { this.blockedTimestamp = blockedTimestamp;}
+    public Instant getBlockedTimestamp() { return this.blockedTimestamp; }
+    public void setBlockedTimestamp(Instant blockedTimestamp) { this.blockedTimestamp = blockedTimestamp;}
 }
 
