@@ -29,33 +29,33 @@ class Conversation {
         // this.user2EncSharedSecret = user2EncSharedSecret;
         // this.createdTimestamp = Instant.now();
         // conversationID(lastConversationID++);
-        this.hidden(false);
-        this.user1ID(user1ID);
-        this.user2ID(user2ID);
-        this.user1EncSharedSecret(user1EncSharedSecret);
-        this.user2EncSharedSecret(user2EncSharedSecret);
-        this.createdTimestamp(Instant.now());
+        this.setHidden(false);
+        this.setUser1ID(user1ID);
+        this.setUser2ID(user2ID);
+        this.setUser1EncSharedSecret(user1EncSharedSecret);
+        this.setUser2EncSharedSecret(user2EncSharedSecret);
+        this.setCreatedTimestamp(Instant.now());
     }
 
     // Getters & Setters
-    public Long conversationID() { return this.conversationID; }
-    public void conversationID(Long conversationID) { this.conversationID = conversationID; }
+    public Long getConversationID() { return this.conversationID; }
+    public void setConversationID(Long conversationID) { this.conversationID = conversationID; }
 
-    public boolean hidden() { return this.hidden; }
-    public void hidden(boolean hidden) { this.hidden = hidden; }
+    public boolean getHidden() { return this.hidden; }
+    public void setHidden(boolean hidden) { this.hidden = hidden; }
 
-    public UUID user1ID() { return this.user1ID; }
-    public void user1ID(UUID user1ID) { this.user1ID = user1ID; }
+    public UUID getUser1ID() { return this.user1ID; }
+    public void setUser1ID(UUID user1ID) { this.user1ID = user1ID; }
 
-    public UUID user2ID() { return this.user2ID; }
-    public void user2ID(UUID user2ID) { this.user2ID = user2ID; }
+    public UUID getUser2ID() { return this.user2ID; }
+    public void setUser2ID(UUID user2ID) { this.user2ID = user2ID; }
 
-    public String user1EncSharedSecret() { return this.user1EncSharedSecret; }
-    public void user1EncSharedSecret(String user1EncSharedSecret) { this.user1EncSharedSecret = user1EncSharedSecret; }
+    public String getUser1EncSharedSecret() { return this.user1EncSharedSecret; }
+    public void setUser1EncSharedSecret(String user1EncSharedSecret) { this.user1EncSharedSecret = user1EncSharedSecret; }
 
-    public String user2EncSharedSecret() { return this.user2EncSharedSecret; }
-    public void user2EncSharedSecret(String user2EncSharedSecret) { this.user2EncSharedSecret = user2EncSharedSecret; }
+    public String getUser2EncSharedSecret() { return this.user2EncSharedSecret; }
+    public void setUser2EncSharedSecret(String user2EncSharedSecret) { this.user2EncSharedSecret = user2EncSharedSecret; }
 
-    public Instant createdTimestamp() { return this.createdTimestamp; }
-    public void createdTimestamp(Instant createdTimestamp) { this.createdTimestamp = createdTimestamp; }
+    public Instant getCreatedTimestamp() { return this.createdTimestamp; }
+    public void setCreatedTimestamp(Instant createdTimestamp) { this.createdTimestamp = createdTimestamp; }
 }
