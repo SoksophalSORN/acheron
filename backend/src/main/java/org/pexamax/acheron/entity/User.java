@@ -18,6 +18,9 @@ public class User { // Made public because it is used in other packages
     private String publicKey;
     private String encPrivateKey;
 
+    // Default constructor for testing purpose
+    public User() {}
+
     public User(String username, String email, String passwordHash, String publicKey, String encPrivateKey) {
         // userID = lastUserID++;
         // this.username = username;
