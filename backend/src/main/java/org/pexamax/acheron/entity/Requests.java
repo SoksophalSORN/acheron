@@ -7,7 +7,7 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
-class Requests {
+public class Requests {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long requestID; // Auto-generated and auto-incremented by JPA

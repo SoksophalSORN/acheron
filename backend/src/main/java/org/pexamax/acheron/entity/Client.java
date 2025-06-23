@@ -5,7 +5,7 @@ import java.time.Instant;
 import jakarta.persistence.*;
 
 @Entity
-class Client {
+public class Client {
     // private static int lastclientID = 0;  // Replace with value from DB
 
     @Id

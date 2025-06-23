@@ -7,7 +7,7 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
-class Blocked {
+public class Blocked {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

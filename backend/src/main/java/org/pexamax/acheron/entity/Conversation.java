@@ -6,7 +6,7 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
-class Conversation {
+public class Conversation {
     // private static int lastConversationID = 0;  // Replace with value from DB
 
     @Id
