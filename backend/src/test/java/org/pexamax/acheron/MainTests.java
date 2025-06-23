@@ -2,7 +2,6 @@ package org.pexamax.acheron;
 
 import org.pexamax.acheron.entity.User; // For User entity
 import org.pexamax.acheron.repository.UserRepository; // For UserRepository
-// import org.pexamax.acheron.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired; // For @Autowired annotation
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest; // For @DataJpaTest annotation
