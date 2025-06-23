@@ -49,6 +49,7 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+
         <!-- Uncomment the following dependency if we have a real SQL database -->
 		<!-- <dependency> -->
 		<!-- 	<groupId>com.mysql</groupId> -->

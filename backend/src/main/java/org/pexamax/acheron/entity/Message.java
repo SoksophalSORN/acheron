@@ -40,8 +40,8 @@ class Message {
         this.setDigitalSignature(digitalSignature);
     }
 
-    public long getMessageID() { return this.messageID; }
-    public void setMessageID(long messageID) { this.messageID = messageID; }
+    public Long getMessageID() { return this.messageID; }
+    public void setMessageID(Long messageID) { this.messageID = messageID; }
 
     public Long getConversationID() { return this.conversationID; }
     public void setConversationID(Long conversationID) { this.conversationID = conversationID; }
