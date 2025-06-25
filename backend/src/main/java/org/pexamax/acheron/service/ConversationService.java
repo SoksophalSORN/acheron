@@ -1,0 +1,20 @@
+// Package and Imports
+package org.pexamax.acheron.service;
+
+import org.pexamax.acheron.entity.Conversation;
+import org.pexamax.acheron.repository.ConversationRepository;
+import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+
+@Service // indicates that this class is a service component
+@Transactional // ensures transactional integrity - every transaction will be committed (make permanent change to the database) 
+               // or rolled back (reverted) if an error occurs
+public class ConversationService {
+    private final ConversationRepository convoRepo;
+    // Business logic for conversation entity
+
+    // public conversationService(ConversationRepository convoRepo) {  // constructor injection preferred
+    //     this.convoRepo = convoRepo;
+    // }
+}
