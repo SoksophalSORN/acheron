@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    // Core CRUD Operations
 
 }
 
