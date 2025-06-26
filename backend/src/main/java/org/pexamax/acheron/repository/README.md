@@ -77,3 +77,8 @@ You already get:
 - Optional and List returns
 And the ability to add method-name-based custom queries
 
+You can find the original documentation of these methods in the below links:
+- [Spring Data JPA Reference Documentation](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/package-summary.html)
+- [JpaRepository JavaDoc (defines CRUD methods)](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html)
+- [CrudRepository JavaDoc (base interface for CRUD)](https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/repository/CrudRepository.html)
+
