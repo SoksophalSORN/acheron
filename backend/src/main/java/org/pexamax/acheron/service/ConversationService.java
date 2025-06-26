@@ -12,9 +12,12 @@ import jakarta.transaction.Transactional;
                // or rolled back (reverted) if an error occurs
 public class ConversationService {
     private final ConversationRepository convoRepo;
-    // Business logic for conversation entity
 
-    // public conversationService(ConversationRepository convoRepo) {  // constructor injection preferred
-    //     this.convoRepo = convoRepo;
-    // }
+    // Constructor Injection
+    public ConversationService(ConversationRepository convoRepo) {  
+        this.convoRepo = convoRepo;
+    }
+
+    //---Business logic for conversation entity---//
+
 }

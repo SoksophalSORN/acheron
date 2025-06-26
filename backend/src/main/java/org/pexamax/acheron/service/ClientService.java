@@ -12,9 +12,12 @@ import jakarta.transaction.Transactional;
                // or rolled back (reverted) if an error occurs
 public class ClientService {
     private final ClientRepository clientRepo;
-    // Business logic for client entity
 
-    // public clientService(ClientRepository clientRepo) {  // constructor injection preferred
-    //     this.clientRepo = clientRepo;
-    // }
+    // Constructor Injection
+    public ClientService(ClientRepository clientRepo) {  
+        this.clientRepo = clientRepo;
+    }
+
+    //---Business logic for client entity---//
+
 }

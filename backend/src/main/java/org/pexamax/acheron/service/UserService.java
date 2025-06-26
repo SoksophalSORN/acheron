@@ -14,11 +14,13 @@ import java.util.List;
                // or rolled back (reverted) if an error occurs
 public class UserService {
     private final UserRepository usrRepo;
-    // Business logic for user entity
 
-    public UserService(UserRepository usrRepo) {  // constructor injection preferred
+    // Constructor Injection; Injecting UserRepository dependency
+    public UserService(UserRepository usrRepo) {  
         this.usrRepo = usrRepo;
     }
+
+    //---Business logic for User entity---//
 
     public List<User> getAllUsers() {
         return usrRepo.findAll();

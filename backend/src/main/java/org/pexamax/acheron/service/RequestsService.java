@@ -12,9 +12,12 @@ import jakarta.transaction.Transactional;
                // or rolled back (reverted) if an error occurs
 public class RequestsService {
     private final RequestsRepository requestsRepo;
-    // Business logic for Requests entity
 
-    // public requestsService(RequestsRepository requestsRepo) {  // constructor injection preferred
-    //     this.requestsRepo = requestsRepo;
-    // }
+    // Constructor Injection
+    public RequestsService(RequestsRepository requestsRepo) { 
+        this.requestsRepo = requestsRepo;
+    }
+
+    //---Business logic for Requests entity---//
+
 }

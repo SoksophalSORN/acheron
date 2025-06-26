@@ -12,9 +12,11 @@ import jakarta.transaction.Transactional;
                // or rolled back (reverted) if an error occurs
 public class MessageService {
     private final MessageRepository msgRepo;
-    // Business logic for message entity
 
-    // public messageService(MessageRepository msgRepo) {  // constructor injection preferred
-    //     this.msgRepo = msgRepo;
-    // }
+    // Constructor Injection
+    public MessageService(MessageRepository msgRepo) {  
+        this.msgRepo = msgRepo;
+    }
+
+    //---Business logic for message entity---//
 }

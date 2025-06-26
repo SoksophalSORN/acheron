@@ -12,9 +12,12 @@ import jakarta.transaction.Transactional;
                // or rolled back (reverted) if an error occurs
 public class BlockedService {
     private final BlockedRepository blockedRepo;
-    // Business logic for Blocked entity
 
-    // public blockedService(BlockedRepository blockedRepo) {  // constructor injection preferred
-    //     this.blockedRepo = blockedRepo;
-    // }
+    // Constructor Injection
+    public BlockedService(BlockedRepository blockedRepo) {  
+        this.blockedRepo = blockedRepo;
+    }
+
+    //---Business logic for Blocked entity---//
+
 }
