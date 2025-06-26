@@ -16,6 +16,9 @@ public class Requests {
     UUID requesteeID;
     Instant requestTimestamp;
 
+    // Default constructor - required by JPA
+    public Requests() {}
+
     public Requests(UUID requester, UUID requestee) {
         this.setRequesterID(requester);
         this.setRequesteeID(requestee);

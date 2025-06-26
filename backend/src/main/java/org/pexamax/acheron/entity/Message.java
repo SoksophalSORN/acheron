@@ -22,6 +22,9 @@ public class Message {
     private byte[] encContent;
     private String digitalSignature;
 
+    // Default constructor - required by JPA
+    public Message() {}
+
     public Message(Long conversationID, Instant senderID, String contentType, byte[] encContent, String digitalSignature, int destructTime) {
         // messageID = lastMessageID++;
         // this.conversationID = conversationID;

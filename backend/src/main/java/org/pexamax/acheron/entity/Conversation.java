@@ -22,6 +22,9 @@ public class Conversation {
     private Instant lastMessageSentTimestamp;
     private UUID blockerID;
 
+    // Default constructor - required by JPA
+    public Conversation() {}
+
     public Conversation(UUID user1ID, UUID user2ID, String user1EncSharedSecret, String user2EncSharedSecret) {
         // conversationID = lastConversationID++;
         // this.hidden = false;

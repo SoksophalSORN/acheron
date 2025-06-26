@@ -17,6 +17,9 @@ public class Client {
     private Instant sessionTokenExpiry;
     private Instant clientTokenExpiry;
 
+    // Default constructor - required by JPA
+    public Client() {}
+
     public Client(String sessionToken, String clientToken, Instant sessionTokenExpiry, Instant clientTokenExpiry) {
         // clientID = lastclientID++;
         // this.sessionToken = sessionToken;

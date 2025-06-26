@@ -17,6 +17,9 @@ public class Blocked {
     private UUID blockedID;
     private Instant blockedTimestamp;
 
+    // Default constructor - required by JPA
+    public Blocked() {}
+
     public Blocked(UUID blockerID, UUID blockedID) {
         this.setBlockerID(blockerID);
         this.setBlockedID(blockedID);
