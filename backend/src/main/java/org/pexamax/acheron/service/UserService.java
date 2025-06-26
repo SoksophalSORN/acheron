@@ -22,12 +22,4 @@ public class UserService {
 
     //---Business logic for User entity---//
 
-    public List<User> getAllUsers() {
-        return usrRepo.findAll();
-    }
-
-    public User saveUser(User user) {
-        return usrRepo.save(user);
-    }
-
 }
