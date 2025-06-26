@@ -46,3 +46,6 @@ public class ItemController {
     public void delete(@PathVariable Long id) { ... }
 }
 ```
+
+You can find the original documentation through the below link:
+https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/package-summary.html
