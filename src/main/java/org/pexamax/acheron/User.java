@@ -1,0 +1,81 @@
+package org.pexamax.acheron;
+
+public class User {
+
+    private String userID; // 64 hexadecimal characters
+
+    private String username;
+    private String email;
+    private boolean emailVerified = false;
+    private String publicKey;
+    private String privateKey;
+    private int message_destruct_timer = 0;;
+
+    // For login
+    public User(String userID, String username, String email, boolean emailVerified, String password, String publicKey, String encPrivateKey, int message_destruct_timer) {
+        this.userID = userID;
+        this.username = username;
+        this.email = email;
+        this.emailVerified = emailVerified;
+        this.publicKey = publicKey;
+        this.privateKey = encPrivateKey; // decrypt and store
+        this.message_destruct_timer = message_destruct_timer; // default to 0
+    }
+
+    // For registration
+    public User(String username, String email, String password) {
+        this.userID = generateUserID();
+        this.username = username;
+        this.email = email;
+        this.publicKey = "publicKey"; // generate public key
+        this.privateKey = "PrivateKey"; // generated private key
+        this.message_destruct_timer = 0; // default to 0
+    }
+    
+    public String getUserID() { return userID; }
+
+    public String getUsername() { return username; }
+
+    public boolean changeUsername(String username) { 
+        // if (username exists in the database) { return false; }
+        // update username in the database
+        // this.username = username;
+        return true;
+        // } 
+        // return false;
+    }
+
+    public String getEmail() { return email; }
+
+    public boolean isEmailVerified() { return emailVerified; }
+
+    public int getMessageDestructTimer() { return message_destruct_timer; }
+
+    public boolean changeEmail(String email) { 
+        // if (email exists in the database) { return false; }
+        // update email in the database
+        // this.email = email;
+        return true;
+        // } 
+        // return false;
+    }
+
+    public String getPublicKey() { return publicKey; }
+
+    public String getPrivateKey() { return privateKey; }
+
+    public static User login(String username, String password) {
+        // Retrieve user from database by username
+        // if (user exists) {
+        //    if (argon2.verify(user.passwordHash, password.toCharArray())) {
+        //        construct user object
+        //        return user object;
+        //    } 
+        // }
+        return null;
+    }
+
+    private String generateUserID() {
+        return "uniqueUserID"; // placeholder
+    }
+}
