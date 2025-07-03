@@ -79,9 +79,13 @@ public class User {
         return Utility.verifyPassword(password, this.passwordHash);
     }
 
-
-
     private String generateUserID() {
         return "uniqueUserID"; // placeholder
+    }
+
+    public String getUserPublicKey(String userID) {
+        // Retrieve public key from database by userID
+        String publicKey = "publicKey"; // placeholder
+        return publicKey;
     }
 }
