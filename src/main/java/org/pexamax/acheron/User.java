@@ -12,7 +12,6 @@ public class User {
     private boolean emailVerified = false;
     private String publicKey;
     private String privateKey;
-    private int message_destruct_timer = 0;;
 
     // For login
     public User(String userID, String username, String passwordHash, String email, boolean emailVerified, String password, String publicKey, String encPrivateKey, int message_destruct_timer) {
@@ -23,7 +22,6 @@ public class User {
         this.emailVerified = emailVerified;
         this.publicKey = publicKey;
         this.privateKey = encPrivateKey; // decrypt and store
-        this.message_destruct_timer = message_destruct_timer; // default to 0
     }
 
     // For registration
@@ -34,7 +32,6 @@ public class User {
         this.email = email;
         this.publicKey = "publicKey"; // generate public key
         this.privateKey = "PrivateKey"; // generated private key
-        this.message_destruct_timer = 0; // default to 0
     }
     
     public String getUserID() { return userID; }
@@ -53,8 +50,6 @@ public class User {
     public String getEmail() { return email; }
 
     public boolean isEmailVerified() { return emailVerified; }
-
-    public int getMessageDestructTimer() { return message_destruct_timer; }
 
     public boolean changeEmail(String email) { 
         // if (email exists in the database) { return false; }
