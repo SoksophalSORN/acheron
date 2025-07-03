@@ -29,6 +29,13 @@ public class Utility {
         // password: nah, you know what this is.
         return argon2.hash(2, 65536, 1, password.toCharArray());
     }
+    
+    public static boolean verifyPassword(String password, String hash) {
+        // argon2.verify(String hash, char[] password)
+        // hash: the hashed password to verify against
+        // password: the plain text password to verify
+        return argon2.verify(hash, password.toCharArray());
+    }
 
     // Salt generation method; 
     public static byte[] generateSalt(int length) {

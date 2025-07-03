@@ -19,7 +19,6 @@ public class Main {
         //         construct user obj for registration
         //         derive secret key and IV from password
         //         encrypt private key with password
-        //         passwordHash = argon2.hash(2, 65536, 1, password.toCharArray()); 
         //         register user into db
         //         return user object
         //     else

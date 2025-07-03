@@ -1,20 +1,24 @@
 package org.pexamax.acheron;
 
+import org.pexamax.acheron.Utility;
+
 public class User {
 
     private String userID; // 64 hexadecimal characters
 
     private String username;
     private String email;
+    private String passwordHash;
     private boolean emailVerified = false;
     private String publicKey;
     private String privateKey;
     private int message_destruct_timer = 0;;
 
     // For login
-    public User(String userID, String username, String email, boolean emailVerified, String password, String publicKey, String encPrivateKey, int message_destruct_timer) {
+    public User(String userID, String username, String passwordHash, String email, boolean emailVerified, String password, String publicKey, String encPrivateKey, int message_destruct_timer) {
         this.userID = userID;
         this.username = username;
+        this.passwordHash = passwordHash;
         this.email = email;
         this.emailVerified = emailVerified;
         this.publicKey = publicKey;
@@ -26,6 +30,7 @@ public class User {
     public User(String username, String email, String password) {
         this.userID = generateUserID();
         this.username = username;
+        this.passwordHash = Utility.hashPassword(password);
         this.email = email;
         this.publicKey = "publicKey"; // generate public key
         this.privateKey = "PrivateKey"; // generated private key
@@ -67,13 +72,19 @@ public class User {
     public static User login(String username, String password) {
         // Retrieve user from database by username
         // if (user exists) {
-        //    if (argon2.verify(user.passwordHash, password.toCharArray())) {
+        //    if (Utility.verifyPassword(password, passwordHash)) {
         //        construct user object
         //        return user object;
         //    } 
         // }
         return null;
     }
+
+    public boolean verifyPassword(String password) {
+        return Utility.verifyPassword(password, this.passwordHash);
+    }
+
+
 
     private String generateUserID() {
         return "uniqueUserID"; // placeholder
