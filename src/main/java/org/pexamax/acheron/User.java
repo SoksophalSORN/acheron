@@ -1,6 +1,6 @@
 package org.pexamax.acheron;
 
-import org.pexamax.acheron.Utility;
+import org.pexamax.acheron.Util;
 
 public class User {
 
@@ -28,7 +28,7 @@ public class User {
     public User(String username, String email, String password) {
         this.userID = generateUserID();
         this.username = username;
-        this.passwordHash = Utility.hashPassword(password);
+        this.passwordHash = Util.hashPassword(password);
         this.email = email;
         this.publicKey = "publicKey"; // generate public key
         this.privateKey = "PrivateKey"; // generated private key
