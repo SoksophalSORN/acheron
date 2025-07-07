@@ -34,7 +34,7 @@ public class User {
 
     // For registration
     public User(String username, String email, String password) {
-        this.userID = Utility.generateHexID(32);
+        // this.userID = Util.generateHexID(32);
         this.username = username;
         this.passwordHash = Util.hashPassword(password);
         this.email = email;
@@ -88,7 +88,7 @@ public class User {
     }
 
     public boolean verifyPassword(String password) {
-        return Utility.verifyPassword(password, this.passwordHash);
+        return Util.verifyPassword(password, this.passwordHash);
     }
 
     public String getUserPublicKey(String userID) {

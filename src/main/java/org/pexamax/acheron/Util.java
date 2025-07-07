@@ -124,9 +124,9 @@ public class Util {
         return new String(decryptedPrivateKey, StandardCharsets.UTF_8);
     }
 
-    public static <type> AsymEncrypt();
-    public static <type> AsymDecrypt();
-
-    public static <type> SymEncrypt();
-    public static <type> SymDecrypt();
+    // public static <type> AsymEncrypt();
+    // public static <type> AsymDecrypt();
+    //
+    // public static <type> SymEncrypt();
+    // public static <type> SymDecrypt();
 }
