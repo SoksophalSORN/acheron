@@ -1,6 +1,7 @@
 // Package and Imports
 package org.pexamax.acheron;
 
+// Encoding and decoding
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -10,10 +11,12 @@ import de.mkammerer.argon2.Argon2Advanced;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.HashResult;
 
+// For Cipher's exceptions
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+// Cipher construction and encryption/decryption
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -173,6 +176,7 @@ public class Util {
        }
     }
 
+    // Use Eliptic Curve Cryptography (ECC)
     // public static <type> AsymEncrypt();
     // public static <type> AsymDecrypt();
     //
