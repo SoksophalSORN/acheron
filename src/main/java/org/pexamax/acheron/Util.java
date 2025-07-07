@@ -15,8 +15,11 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Util {
-    // encrypt/decrypt private key method
-    //      AES-GCM encryt/decrypt for private key
+    // Constants for Argon2 parameters
+    private static final int ITERATIONS = 2;
+    private static final int MEMORY = 65535; // 64 MB
+    private static final int PARALLELISM = 1; // Single-threaded
+    private static final de.mkammerer.argon2.Argon2Version ARGON2_VERSION = de.mkammerer.argon2.Argon2Version.V13; // Use Argon2 v1.3; has 2 values: V10 and V13
 
     private static final Argon2 argon2 = Argon2Factory.create();
     private static final Argon2Advanced argon2Advanced = Argon2Factory.createAdvanced();
@@ -28,20 +31,22 @@ public class Util {
         // memory: memory usage in kilobytes (here, 65536 KB = 64 MB). More memory makes it harder for attackers to use GPUs or ASICs.
         // parallelism: number of parallel threads or compute lanes used. 1 means single-threaded hashing.
         // password: nah, you know what this is.
-        return argon2.hash(2, 65536, 1, password.toCharArray());
+        return argon2.hash(ITERATIONS, MEMORY, PARALLELISM, password.toCharArray());
     }
 
     // Hash password with Argon2 and return both raw byte and encoded representation
-    public static HashResult hashPassowrd(String password, int hashLength) {
-        int iterations = 2;
-        int memory = 65535; // 64 MB
-        int parallelism = 1; // Single-threaded
+    public static HashResult hashPassword(String password, int hashLength) {
         int saltLength = 12;
-        de.mkammerer.argon2.Argon2Version version = de.mkammerer.argon2.Argon2Version.V13; // Use Argon2 v1.3; has 2 values: V10 and V13
         byte[] salt = argon2Advanced.generateSalt(saltLength); // Generate a random salt of 12 bytes
         // return both raw byte and the encoded representation
-        return argon2Advanced.hashAdvanced(iterations, memory, parallelism, password.getBytes(StandardCharsets.UTF_8), salt, hashLength, version);
+        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, password.getBytes(StandardCharsets.UTF_8), salt, hashLength, ARGON2_VERSION);
     }
+
+    public static HashResult hashPassword(String password, byte[] salt, int hashLength) {
+        // return both raw byte and the encoded representation
+        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, password.getBytes(StandardCharsets.UTF_8), salt, hashLength, ARGON2_VERSION);
+    }
+
 
     public static boolean verifyPassword(String password, String hash) {
         // argon2.verify(String hash, char[] password)
@@ -53,16 +58,12 @@ public class Util {
 
     // Generate secret key and IV from password
     public static String encryptPrivateKey(String password, String privateKey) throws Exception {
-        int iterations = 2;
-        int memory = 65535; // 64 MB
-        int parallelism = 1; // Single-threaded
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
-        int hashLength = secretKeyLength + IVLength; // 16 bytes for secret key
-        de.mkammerer.argon2.Argon2Version version = de.mkammerer.argon2.Argon2Version.V13; // Use Argon2 v1.3; has 2 values: V10 and V13
-        byte[] salt = argon2Advanced.generateSalt(16); // 16-byte long salt for Argon2
+        int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
 
-        HashResult passwordHashResult = argon2Advanced.hashAdvanced(iterations, memory, parallelism, password.getBytes(java.nio.charset.StandardCharsets.UTF_8), salt, hashLength, version);
+        byte[] salt = argon2Advanced.generateSalt(16); // 16-byte long salt for Argon2
+        HashResult passwordHashResult = hashPassword(password, salt, hashLength);
         byte[] rawPassowrdHash = passwordHashResult.getRaw();
 
         byte[] secretKey = new byte[secretKeyLength]; // 32 bytes for AES-GCM secret key
@@ -72,7 +73,7 @@ public class Util {
         System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length); // Copy next 12 bytes for IV from the raw password hash
 
         // Initialize AES-GCM cipher
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/GCM/PKCS5Padding");
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
         GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag (cryptographic checksum) length
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IVSpec);
@@ -87,6 +88,40 @@ public class Util {
         
         // Return the Base64-encoded string of the combined cipher and salt
         return Base64.getEncoder().encodeToString(combinedCipherAndSalt);
+    }
+
+    public static String decryptPrivateKey(String password, String encPrivateKey) throws Exception {
+        int secretKeyLength = 16; // 16 bytes for secret key
+        int IVLength = 12; // 12 bytes for IV
+        int hashLength = secretKeyLength + IVLength; // 16 bytes for secret key
+
+        byte[] combinedCipherAndSalt = Base64.getDecoder().decode(encPrivateKey);
+
+        byte[] salt = new byte[16]; // 16 bytes for salt
+        System.arraycopy(combinedCipherAndSalt, combinedCipherAndSalt.length - salt.length, salt, 0, salt.length); // Extract the salt from the end of the byte array
+
+        byte[] PRKCipher = new byte[combinedCipherAndSalt.length - salt.length];
+        System.arraycopy(combinedCipherAndSalt, 0, PRKCipher, 0, PRKCipher.length); // Extract the cipher from the beginning of the byte array
+
+        HashResult passwordHashResult = hashPassword(password, salt, hashLength);
+        byte[] rawPassowrdHash = passwordHashResult.getRaw();
+
+        byte[] secretKey = new byte[secretKeyLength];
+        System.arraycopy(rawPassowrdHash, 0, secretKey, 0, secretKey.length); 
+
+        byte[] IV = new byte[IVLength];
+        System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length); 
+
+        // Initialize AES-GCM cipher
+        Cipher cipher = Cipher.getInstance("AES/GCM/PKCS5Padding");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+        GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag length
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, IVSpec);
+
+        // Decrypt the private key
+        byte[] decryptedPrivateKey = cipher.doFinal(PRKCipher);
+
+        return new String(decryptedPrivateKey, StandardCharsets.UTF_8);
     }
 
     public static <type> AsymEncrypt();
