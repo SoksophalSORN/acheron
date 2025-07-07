@@ -10,9 +10,16 @@ import de.mkammerer.argon2.Argon2Advanced;
 import de.mkammerer.argon2.Argon2Factory;
 import de.mkammerer.argon2.HashResult;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class Util {
     // Constants for Argon2 parameters
@@ -57,7 +64,7 @@ public class Util {
 
 
     // Generate secret key and IV from password
-    public static String encryptPrivateKey(String password, String privateKey) throws Exception {
+    public static String encryptPrivateKey(String password, String privateKey)  {
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
         int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
@@ -73,27 +80,48 @@ public class Util {
         System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length); // Copy next 12 bytes for IV from the raw password hash
 
         // Initialize AES-GCM cipher
-        Cipher cipher = Cipher.getInstance("AES/GCM/PKCS5Padding");
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
-        GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag (cryptographic checksum) length
-        cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IVSpec);
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding"); // AES in GCM mode with no padding
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+            GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag (cryptographic checksum) length
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IVSpec);
 
-        // Encrypt the private key
-        byte[] encryptedPrivateKey = cipher.doFinal(privateKey.getBytes(StandardCharsets.UTF_8));
+            // Encrypt the private key
+            byte[] encryptedPrivateKey = cipher.doFinal(privateKey.getBytes(StandardCharsets.UTF_8));
 
-        // Combine the encrypted private key and salt into a single byte array
-        byte[] combinedCipherAndSalt = new byte[cipher.getOutputSize(encryptedPrivateKey.length) + salt.length];
-        System.arraycopy(encryptedPrivateKey, 0, combinedCipherAndSalt, 0, encryptedPrivateKey.length);
-        System.arraycopy(salt, 0, combinedCipherAndSalt, encryptedPrivateKey.length, salt.length);
-        
-        // Return the Base64-encoded string of the combined cipher and salt
-        return Base64.getEncoder().encodeToString(combinedCipherAndSalt);
+            // Combine the encrypted private key and salt into a single byte array
+            byte[] combinedCipherAndSalt = new byte[encryptedPrivateKey.length + salt.length];
+            System.arraycopy(encryptedPrivateKey, 0, combinedCipherAndSalt, 0, encryptedPrivateKey.length);
+            System.arraycopy(salt, 0, combinedCipherAndSalt, encryptedPrivateKey.length, salt.length);
+            
+            // Return the Base64-encoded string of the combined cipher and salt
+            return Base64.getEncoder().encodeToString(combinedCipherAndSalt);
+
+        } catch (NoSuchAlgorithmException noSuchAlgo) {
+            System.out.println(" No Such Algorithm exists " + noSuchAlgo);
+            return null;
+        } catch (NoSuchPaddingException noSuchPad) {
+            System.out.println(" No Such Padding exists " + noSuchPad);
+            return null;
+        } catch (InvalidKeyException invalidKey) {
+            System.out.println(" Invalid Key " + invalidKey);
+            return null;
+        } catch (BadPaddingException badPadding) {
+            System.out.println(" Bad Padding " + badPadding);
+            return null;
+        } catch (IllegalBlockSizeException illegalBlockSize) {
+            System.out.println(" Illegal Block Size " + illegalBlockSize);
+            return null;
+        } catch (InvalidAlgorithmParameterException invalidParam) {
+            System.out.println(" Invalid Parameter " + invalidParam);
+            return null;
+        }
     }
 
-    public static String decryptPrivateKey(String password, String encPrivateKey) throws Exception {
+    public static String decryptPrivateKey(String password, String encPrivateKey) {
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
-        int hashLength = secretKeyLength + IVLength; // 16 bytes for secret key
+        int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
 
         byte[] combinedCipherAndSalt = Base64.getDecoder().decode(encPrivateKey);
 
@@ -113,15 +141,36 @@ public class Util {
         System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length); 
 
         // Initialize AES-GCM cipher
-        Cipher cipher = Cipher.getInstance("AES/GCM/PKCS5Padding");
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
-        GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag length
-        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, IVSpec);
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding"); // AES in GCM mode with no padding
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+            GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag length
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, IVSpec);
 
-        // Decrypt the private key
-        byte[] decryptedPrivateKey = cipher.doFinal(PRKCipher);
+            // Decrypt the private key
+            byte[] decryptedPrivateKey = cipher.doFinal(PRKCipher);
 
-        return new String(decryptedPrivateKey, StandardCharsets.UTF_8);
+            return new String(decryptedPrivateKey, StandardCharsets.UTF_8);
+
+        } catch (NoSuchAlgorithmException noSuchAlgo) {
+            System.out.println(" No Such Algorithm exists " + noSuchAlgo);
+            return null;
+        } catch (NoSuchPaddingException noSuchPad) {
+            System.out.println(" No Such Padding exists " + noSuchPad);
+            return null;
+        } catch (InvalidKeyException invalidKey) {
+            System.out.println(" Invalid Key " + invalidKey);
+            return null;
+        } catch (BadPaddingException badPadding) {
+            System.out.println(" Bad Padding " + badPadding);
+            return null;
+        } catch (IllegalBlockSizeException illegalBlockSize) {
+            System.out.println(" Illegal Block Size " + illegalBlockSize);
+            return null;
+        } catch (InvalidAlgorithmParameterException invalidParam) {
+            System.out.println(" Invalid Parameter " + invalidParam);
+            return null;
+       }
     }
 
     // public static <type> AsymEncrypt();
