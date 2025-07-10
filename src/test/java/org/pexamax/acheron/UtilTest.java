@@ -6,7 +6,7 @@ package org.pexamax.acheron;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.pexamax.acheron.Util;
+// import org.pexamax.acheron.Util;
 
 public class UtilTest {
 
@@ -36,8 +36,6 @@ public class UtilTest {
         String encrypted = Util.encryptPrivateKey(password, privateKey);
         String decrypted = Util.decryptPrivateKey(password, encrypted);
         assertEquals(privateKey, decrypted);
-
-
     }
 }
 

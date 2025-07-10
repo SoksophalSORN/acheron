@@ -22,6 +22,10 @@ public class Conversation {
 
     private ArrayList<Message> messages = new ArrayList<Message>(20); // fetch 20 messages at a time
 
+    // To keep track of all the conversations user has - will be moved to convo
+    private ArrayList<Conversation> conversations = new ArrayList<Conversation>();
+    private ArrayList<Conversation> hiddenConversations = new ArrayList<Conversation>();
+
     // For creating a new conversation
     public Conversation(String user1ID, String user2ID) {
         this.user1ID = user1ID;
@@ -81,6 +85,23 @@ public class Conversation {
 
     public int getDestructTimer() {
         return this.destructTimer;
+    }
+
+        // Will be moved to Conversation class
+    public void retrieveConversations() {
+        // Retrieve 10 conversations at a time based on the userID
+        // Then add them to their respective collection whether they are hidden or not
+    }
+
+    // Will be moved to Conversation class
+    public void listConversations(boolean hidden) {
+        // List all visible/hidden conversations for the user
+    }
+
+    // Will be moved to Conversation class
+    public void selectConversation(int index, boolean hidden) {
+        // Select the conversation at the specified index
+        // Display the messages in the conversation
     }
 
 }

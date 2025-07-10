@@ -5,7 +5,7 @@ import org.pexamax.acheron.Util;
 
 import java.util.ArrayList;
 
-public class User {
+public class User implements Persistable{
 
     private String userID; // 64 hexadecimal characters
 
@@ -16,20 +16,13 @@ public class User {
     private String publicKey;
     private String privateKey;
 
-    // To keep track of all the conversations user has
-    private ArrayList<Conversation> conversations = new ArrayList<Conversation>();
-    private ArrayList<Conversation> hiddenConversations = new ArrayList<Conversation>();
 
-    // For login
-    public User(String userID, String username, String passwordHash, String email, boolean emailVerified,
-            String password, String publicKey, String encPrivateKey, int message_destruct_timer) {
+    // Retrieve user data based on userID
+    public User(String userID) {
         this.userID = userID;
-        this.username = username;
-        this.passwordHash = passwordHash;
-        this.email = email;
-        this.emailVerified = emailVerified;
-        this.publicKey = publicKey;
-        this.privateKey = encPrivateKey; // decrypt and store
+        // Load user data from the database
+        load();
+        // User(all the loaded fields);
     }
 
     // For registration
@@ -87,6 +80,18 @@ public class User {
         return null;
     }
 
+    // Method for registering a new user
+    public static User register(String username, String email, String password) {
+        // Handle registration process with db
+        // Check if username or email already exists in the database
+        // if (username or email exists) { return null; }
+        // Generate userID and public/private keys
+        // Hash the password
+        // Save user to the database
+        // Return new User object
+        return new User(username, email, password);
+    }
+
     public boolean verifyPassword(String password) {
         return Util.verifyPassword(password, this.passwordHash);
     }
@@ -97,17 +102,22 @@ public class User {
         return publicKey;
     }
 
-    public void retrieveConversations() {
-        // Retrieve 10 conversations at a time based on the userID
-        // Then add them to their respective collection whether they are hidden or not
+    @Override
+    public void load() {
+        // Load user data from the database
+        // This method should retrieve the user data based on userID and populate the fields to construct a user object
+        // this.userID = userID;
+        // this.username = username;
+        // this.passwordHash = passwordHash;
+        // this.email = email;
+        // this.emailVerified = emailVerified;
+        // this.publicKey = publicKey;
+        // this.privateKey = encPrivateKey; // decrypt and store
     }
 
-    public void listConversations(boolean hidden) {
-        // List all visible/hidden conversations for the user
-    }
-
-    public void selectConversation(int index, boolean hidden) {
-        // Select the conversation at the specified index
-        // Display the messages in the conversation
+    @Override
+    public void save() {
+        // Save user data to the database
+        // This method should save the current state of the user object to the database
     }
 }
