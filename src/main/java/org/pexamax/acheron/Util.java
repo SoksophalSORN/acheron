@@ -176,6 +176,10 @@ public class Util {
        }
     }
 
+    // userID generator
+    // public and private key generator
+    // sharedkey generator
+
     // Use Eliptic Curve Cryptography (ECC)
     // public static <type> AsymEncrypt();
     // public static <type> AsymDecrypt();
