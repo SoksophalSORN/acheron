@@ -78,7 +78,7 @@ public class User {
 
     public static User login(String username, String password) {
         // Retrieve user from database by username
-        // if (user exists) {
+        // if (user record exists) {
         // if (Utility.verifyPassword(password, passwordHash)) {
         // construct user object
         // return user object;
