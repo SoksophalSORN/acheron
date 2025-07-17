@@ -16,9 +16,6 @@ public class Main {
         //              if email exists in database
         //                  prompt user to input a new one
         //         prompt for password 
-        //         construct user obj for registration
-        //         derive secret key and IV from password
-        //         encrypt private key with password
         //         register user into db
         //         return user object
         //     else

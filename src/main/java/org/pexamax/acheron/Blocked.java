@@ -2,17 +2,11 @@ package org.pexamax.acheron;
 
 import java.time.Instant;
 
-public class Blocked {
-
-	private long blockID; 
-
-	private Long blockerID;
-	private Long blockedID;
-	private Instant blockedTimestamp;
+public class Blocked extends Connection {
 
 	public Blocked(Long blockerID, Long blockedID) {
-        this.blockerID = blockerID;
-        this.blockedID = blockedID;
-        this.blockedTimestamp = Instant.now();
+        this.initiatorID = blockerID;
+        this.receiverID = blockedID;
+        this.initTimestamp = Instant.now();
 	}
 }
