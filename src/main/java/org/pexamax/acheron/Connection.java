@@ -23,6 +23,10 @@ public class Connection {
         this.initTimestamp = timestamp;
     }
 
+    protected long getID() {
+        return ID;
+    }
+
     protected long getInitiatorID() {
         return initiatorID;
     }
