@@ -28,7 +28,7 @@ public class Conversation extends Connection implements Persistable {
     private static TreeSet<Conversation> hiddenConversations = new TreeSet<Conversation>(reverseComparator);
 
     // For creating a new conversation
-    public Conversation(String user1ID, String user2ID) {
+    public Conversation(long user1ID, long user2ID) {
         super(user1ID, user2ID);
         this.hidden = false;
         this.lastMessageSentTimestamp = Instant.now();
@@ -44,8 +44,8 @@ public class Conversation extends Connection implements Persistable {
     // For retrieving data from the database
     public Conversation(
             long conversationID,
-            String user1ID,
-            String user2ID,
+            long user1ID,
+            long user2ID,
             boolean hidden,
             String user1EncSharedSecret,
             String user2EncSharedSecret,
