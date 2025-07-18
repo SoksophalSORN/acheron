@@ -3,20 +3,35 @@ package org.pexamax.acheron;
 import java.time.Instant;
 
 public class Connection {
-    protected long ID;
-    protected long initiatorID;
-    protected long receiverID;
-    protected Instant initTimestamp;
+    private long ID;
+    private long initiatorID;
+    private long receiverID;
+    private Instant initTimestamp;
 
-    public long getInitiatorID() {
+    // Create new record
+    public Connection(long initiatorID, long receiverID) {
+        this.initiatorID = initiatorID;
+        this.receiverID = receiverID;
+        this.initTimestamp = Instant.now();
+    }
+
+    // Retrieve existing record
+    public Connection(long id, long initiatorID, long receiverID, Instant timestamp) {
+        this.ID = id;
+        this.initiatorID = initiatorID;
+        this.receiverID = receiverID;
+        this.initTimestamp = timestamp;
+    }
+
+    protected long getInitiatorID() {
         return initiatorID;
     }
 
-    public long getReceiverID() {
+    protected long getReceiverID() {
         return receiverID;
     }
 
-    public long getInitTimestamp() {
+    protected long getInitTimestamp() {
         return initTimestamp;
     }
 }

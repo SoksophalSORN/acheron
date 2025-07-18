@@ -9,17 +9,12 @@ public class Blocked extends Connection {
 
         // Creating a new blocked user
         public Blocked(long blocker, long blocked) {
-                this.initiatorID = blocker;
-                this.receiverID = blocked;
-                this.initTimestamp = Instant.now();
+                super(blocker, blocked);
         }
 
         // Retrieving blocked users from database
         public Blocked(long id, long blocker, long blocked, Instant timestamp) {
-                this.ID = id;
-                this.initiatorID = blocker;
-                this.receiverID = blocked;
-                this.initTimestamp = timestamp;
+                super(id, blocker, blocked, timestamp);
         }
 
         public static void retrieveBlockedUsers(long blockerID) {

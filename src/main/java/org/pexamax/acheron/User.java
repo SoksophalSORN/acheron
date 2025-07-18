@@ -5,9 +5,9 @@ import org.pexamax.acheron.Util;
 
 import java.util.ArrayList;
 
-public class User implements Persistable{
+public class User implements Persistable {
 
-    private String userID; // 64 hexadecimal characters
+    private long userID; // 64 hexadecimal characters
 
     private String username;
     private String email;
@@ -16,9 +16,8 @@ public class User implements Persistable{
     private String publicKey;
     private String privateKey;
 
-
     // Retrieve user data based on userID
-    public User(String userID) {
+    public User(long userID) {
         this.userID = userID;
         // Load user data from the database
         load();
@@ -35,7 +34,7 @@ public class User implements Persistable{
         this.privateKey = "PrivateKey"; // generated private key
     }
 
-    public String getUserID() {
+    public long getUserID() {
         return userID;
     }
 
@@ -96,7 +95,7 @@ public class User implements Persistable{
         return Util.verifyPassword(password, this.passwordHash);
     }
 
-    public String getUserPublicKey(String userID) {
+    public long getUserPublicKey(long userID) {
         // Retrieve public key from database by userID
         String publicKey = "publicKey"; // placeholder
         return publicKey;
@@ -105,7 +104,8 @@ public class User implements Persistable{
     @Override
     public void load() {
         // Load user data from the database
-        // This method should retrieve the user data based on userID and populate the fields to construct a user object
+        // This method should retrieve the user data based on userID and populate the
+        // fields to construct a user object
         // this.userID = userID;
         // this.username = username;
         // this.passwordHash = passwordHash;

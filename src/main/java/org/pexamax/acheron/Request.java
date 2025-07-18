@@ -1,4 +1,3 @@
-// Package and Imports
 package org.pexamax.acheron;
 
 import java.util.ArrayList;
@@ -11,24 +10,19 @@ public class Request extends Connection {
 
     // Creating new request
     public Request(long requester, long requestee) {
-        this.initiatorID = requester;
-        this.receiverID = requestee;
-        this.initTimestamp = Instant.now();
+        super(requester, requestee);
     }
 
     // Retrieving requests from database
     public Request(long id, long requester, long requestee, Instant timestamp) {
-        this.ID = id;
-        this.initiatorID = requester;
-        this.receiverID = requestee;
-        this.initTimestamp = timestamp;
+        super(id, requester, requestee, timestamp);
     }
 
     public static void retrieveOutgoingRequests(long requesterID) {
         // retrieving outgoingRequests from database
     }
 
-    public static void retrieveIncomingRequests(String requesteeID) {
+    public static void retrieveIncomingRequests(long requesteeID) {
         // retrieving incoming requests from database
     }
 
