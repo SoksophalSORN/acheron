@@ -23,7 +23,7 @@ public class Conversation extends Connection implements Persistable {
     // as a tiebreaker to avoid merging
     private static Comparator<Conversation> reverseComparator = Comparator
             .comparing((Conversation convo) -> convo.lastMessageSentTimestamp, Comparator.reverseOrder())
-            .thenComparing(convo -> convo.conversationID);
+            .thenComparing(convo -> convo.getID());
     private static TreeSet<Conversation> conversations = new TreeSet<Conversation>(reverseComparator);
     private static TreeSet<Conversation> hiddenConversations = new TreeSet<Conversation>(reverseComparator);
 
