@@ -34,15 +34,15 @@ public class Request extends Connection {
         // displaying the incoming requests from the incoming requests array list
     }
 
-    public acceptRequest() {
+    public void acceptRequest() {
         // logic to accept the current request
     }
 
-    public rejectRequest() {
+    public void rejectRequest() {
         // logic to reject the current request
     }
 
-    public cancelRequest() {
+    public void cancelRequest() {
         // logic to cancel the current request
     }
 }
