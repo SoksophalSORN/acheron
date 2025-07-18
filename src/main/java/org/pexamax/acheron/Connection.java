@@ -35,7 +35,7 @@ public class Connection {
         return receiverID;
     }
 
-    protected long getInitTimestamp() {
+    protected Instant getInitTimestamp() {
         return initTimestamp;
     }
 }
