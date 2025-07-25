@@ -176,7 +176,6 @@ public class Util {
        }
     }
 
-    // userID generator
     // public and private key generator
     // sharedkey generator
 

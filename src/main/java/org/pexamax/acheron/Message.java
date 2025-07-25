@@ -16,7 +16,7 @@ public class Message {
     private String digitalSignature;
 
     // For creating a new message
-    public Message(long conversationID, String senderID, String contentType, byte[] content, int destructTime) {
+    public Message(long conversationID, long senderID, String contentType, byte[] content, int destructTime) {
         this.conversationID = conversationID;
         this.senderID = senderID;
         this.sentTime = Instant.now(); // Set sentTime to current time
@@ -32,7 +32,7 @@ public class Message {
     public Message(
             long messageID,
             long conversationID,
-            String senderID,
+            long senderID,
             String contentType,
             byte[] encContent,
             Instant sentTime,

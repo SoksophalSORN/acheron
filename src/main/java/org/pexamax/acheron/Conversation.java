@@ -3,8 +3,8 @@ package org.pexamax.acheron;
 import org.pexamax.acheron.Message;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
 public class Conversation extends Connection implements Persistable {
@@ -16,7 +16,7 @@ public class Conversation extends Connection implements Persistable {
     private String blockerID;
     private int destructTimer;
 
-    private ArrayList<Message> messages = new ArrayList<Message>(20); // fetch 20 messages at a time
+    private LinkedList<Message> messages = new LinkedList<Message>(); // fetch 20 messages at a time
 
     // To keep track of all the conversations user has
     // Ordering by the latest lastMessageSentTimestamp while having conversationID

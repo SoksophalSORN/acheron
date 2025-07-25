@@ -95,7 +95,7 @@ public class User implements Persistable {
         return Util.verifyPassword(password, this.passwordHash);
     }
 
-    public long getUserPublicKey(long userID) {
+    public String getUserPublicKey(long userID) {
         // Retrieve public key from database by userID
         String publicKey = "publicKey"; // placeholder
         return publicKey;
