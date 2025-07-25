@@ -65,17 +65,26 @@ public class Conversation extends Connection implements Persistable {
     }
 
     public void retrieveMessages() {
-        // Retrieve 20 messages at a time for this conversation, and put em into the
-        // message ArrayList
-        // and decrypt them with the shared secret
+        // If no messages are currently loaded:
+        //     fetch messages from the database for the current conversation
+        //     order by timestamp from newest to oldest
+        // Else:
+        //     fetch messages from the database for the current conversation
+        //     where sent_time < oldest message's sent_time in collection
+        //     order by timestamp from newest to oldest
+        // Insert the fetched messages into the collection in the beginning from most to least recent
     }
 
     public void displayMessages() {
-        // Display the messages in this conversation from the message ArrayList
+        for (Message message : messages) {
+            System.out.println(message.toString());
+        }
     }
 
     public void setDestructTimer(int timer) {
-        this.destructTimer = timer;
+        int oneWeekInSeconds = 604800;
+        if (timer < 0) this.destructTimer = 0; // No destruct timer
+        else if (timer > oneWeekInSeconds) this.destructTimer = oneWeekInSeconds; // Max 7 days 
         // update the database with the new destruct timer
     }
 
@@ -107,5 +116,21 @@ public class Conversation extends Connection implements Persistable {
     public void save() {
         // Save the conversation's metadata to the database
         // This will be called when a field of a conversation object is being changed
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "isHidden: " + this.hidden + "\n lastMessageSentTimestamp: " + this.lastMessageSentTimestamp + "\n blockerID: " + this.blockerID + "\n destructTimer: " + this.destructTimer + "\n";
+    }
+
+    @Override
+    public boolean equals(Object convo) {
+        return super.equals(convo) && 
+            (convo instanceof Conversation) && 
+            this.hidden == ((Conversation)convo).hidden && 
+            this.lastMessageSentTimestamp.equals(((Conversation)convo).lastMessageSentTimestamp) &&
+            this.blockerID.equals(((Conversation)convo).blockerID) &&
+            this.sharedSecret.equals(((Conversation)convo).sharedSecret) &&
+            this.destructTimer == ((Conversation)convo).destructTimer;
     }
 }

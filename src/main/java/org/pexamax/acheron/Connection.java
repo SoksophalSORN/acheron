@@ -9,14 +9,14 @@ public class Connection {
     private Instant initTimestamp;
 
     // Create new record
-    public Connection(long initiatorID, long receiverID) {
+    protected Connection(long initiatorID, long receiverID) {
         this.initiatorID = initiatorID;
         this.receiverID = receiverID;
         this.initTimestamp = Instant.now();
     }
 
     // Retrieve existing record
-    public Connection(long id, long initiatorID, long receiverID, Instant timestamp) {
+    protected Connection(long id, long initiatorID, long receiverID, Instant timestamp) {
         this.ID = id;
         this.initiatorID = initiatorID;
         this.receiverID = receiverID;
@@ -37,5 +37,20 @@ public class Connection {
 
     protected Instant getInitTimestamp() {
         return initTimestamp;
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " Properties:\n Instance ID: " + ID + "\n Initiator ID: " + initiatorID + "\n Receiver ID: " + receiverID + "\n Initiation Timestamp: " + initTimestamp + "\n";
+    }
+
+    @Override
+    public boolean equals(Object conn) {
+        if (conn instanceof Connection) {
+            return this.initiatorID == ((Connection)conn).initiatorID &&
+                this.receiverID == ((Connection)conn).receiverID && 
+                this.initTimestamp.equals(((Connection)conn).initTimestamp);
+        }
+        return false;
     }
 }
