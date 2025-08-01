@@ -28,4 +28,12 @@ public class Blocked extends Connection {
     public void unblockUser() {
         // Unblocking a user by removing them from the blockedUsers list
     }
+
+    public static boolean areUsersConnected(long user1ID, long user2ID) {
+        // Query for the connections between user1 and user2 from blocked table
+        // If a connection exists the table, return true
+        // else:
+        return false;
+    }
+
 }
