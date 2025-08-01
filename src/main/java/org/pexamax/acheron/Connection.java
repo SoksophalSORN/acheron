@@ -69,6 +69,13 @@ public class Connection {
         return false;
     }
 
+    protected void deleteConnection(String tableName) {
+        // Delete the connection from the specified table from the database
+        // based on the initiatorID and receiverID.
+        // Table name can be either "conversation", "request", or "blocked".
+        // Then, remove the connection from the local collection.
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + " Properties:\n Instance ID: " + ID + "\n Initiator ID: " + initiatorID + "\n Receiver ID: " + receiverID + "\n Initiation Timestamp: " + initTimestamp + "\n";
