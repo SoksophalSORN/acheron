@@ -45,4 +45,19 @@ public class Request extends Connection {
     public void cancelRequest() {
         // logic to cancel the current request
     }
+
+    public static boolean areUsersConnected(long user1ID, long user2ID) {
+        // Query for the connections between user1 and user2 from request table
+        // If a connection exists the table, return true
+        // else:
+        return false;
+    }
+
+    public String toString() {
+        return super.toString(); 
+    }
+
+    public boolean equals(Object request) {
+        return super.equals(request);
+    }
 }

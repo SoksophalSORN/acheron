@@ -25,4 +25,5 @@ public class Client {
 		this.sessionTokenExpiry = sessionTokenExpiry;
 		this.clientTokenExpiry = clientTokenExpiry;
 	}
+
 }
