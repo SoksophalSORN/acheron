@@ -52,4 +52,13 @@ public class Message {
         this.destructTime = destructTime;
         this.digitalSignature = digitalSignature; // Verify the signature with the sender's public key
     }
+
+    public Instant getSentTime() { return sentTime; }
+    public long getSenderID() { return senderID; }
+    public byte[] getContent() { return content; }
+
+    @Override
+    public String toString() {
+        return (this.getContent() != null ) ? senderID + ": " + new String(this.getContent(), java.nio.charset.StandardCharsets.UTF_8) : "null";
+    }
 }

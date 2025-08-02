@@ -1,8 +1,6 @@
 // Package and Imports
 package org.pexamax.acheron;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-
 public interface Persistable {
 
     // Saves the current state of the object to persistent storage.
