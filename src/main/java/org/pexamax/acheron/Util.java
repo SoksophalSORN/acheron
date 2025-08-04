@@ -34,9 +34,14 @@ public class Util {
     private static final Argon2 argon2 = Argon2Factory.create();
     private static final Argon2Advanced argon2Advanced = Argon2Factory.createAdvanced();
 
-    public static String bytesToString(byte[] bytes) {
-        // Convert byte array to UTF_8 string
+    // Convert byte array to UTF_8 string
+    public static String bytesToUTF8(byte[] bytes) {
         return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    // Convert byte array to Base64 string
+    public static String bytesToBase64(byte[] bytes) {
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     // Take plain password, return hash
@@ -103,7 +108,7 @@ public class Util {
             System.arraycopy(salt, 0, combinedCipherAndSalt, encryptedPrivateKey.length, salt.length);
             
             // Return the Base64-encoded string of the combined cipher and salt
-            return Base64.getEncoder().encodeToString(combinedCipherAndSalt);
+            return bytesToBase64(combinedCipherAndSalt);
 
         } catch (NoSuchAlgorithmException noSuchAlgo) {
             System.out.println(" No Such Algorithm exists " + noSuchAlgo);
@@ -158,7 +163,7 @@ public class Util {
             // Decrypt the private key
             byte[] decryptedPrivateKey = cipher.doFinal(PRKCipher);
 
-            return new String(decryptedPrivateKey, StandardCharsets.UTF_8);
+            return bytesToUTF8(decryptedPrivateKey);
 
         } catch (NoSuchAlgorithmException noSuchAlgo) {
             System.out.println(" No Such Algorithm exists " + noSuchAlgo);
@@ -181,8 +186,9 @@ public class Util {
        }
     }
 
-    // public and private key generator
-    // sharedkey generator
+    // public and private key generator -- will use secp256k1 or Curve25519 (bouncy castle)
+    // sharedkey generator -- will Curve25519 (bouncy castle)
+    // Ed25519 for Curve25519 digital signatures
 
     // Use Eliptic Curve Cryptography (ECC)
     // public static <type> AsymEncrypt();

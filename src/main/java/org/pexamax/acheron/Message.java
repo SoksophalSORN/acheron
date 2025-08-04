@@ -68,6 +68,6 @@ public class Message {
 
     @Override
     public String toString() {
-        return getMessageID() + "\t" + getConversationID() + "\t" + getDestructTime() + "\t" + getSenderID() + "\t" + getSentTime() + "\t" + getContentType() + "\t" + Util.bytesToString(getContent()) + "\t" + getDigitalSignature();
+        return getMessageID() + "\t" + getConversationID() + "\t" + getDestructTime() + "\t" + getSenderID() + "\t" + getSentTime() + "\t" + getContentType() + "\t" + Util.bytesToUTF8(getContent()) + "\t" + getDigitalSignature();
     }
 }
