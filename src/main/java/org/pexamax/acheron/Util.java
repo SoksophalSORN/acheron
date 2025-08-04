@@ -25,6 +25,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.agreement.X25519Agreement;
 import org.bouncycastle.crypto.generators.X25519KeyPairGenerator;
 import org.bouncycastle.crypto.params.X25519KeyGenerationParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
@@ -40,6 +41,8 @@ public class Util {
     private static final int PARALLELISM = 1; // Single-threaded
     private static final de.mkammerer.argon2.Argon2Version ARGON2_VERSION = de.mkammerer.argon2.Argon2Version.V13; // Use Argon2 v1.3; has 2 values: V10 and V13
 
+    private static final int X25519_SHARED_KEY_LENGTH = 32; // 32 bytes for X25519 shared key length
+
     private static final Argon2 argon2 = Argon2Factory.create();
     private static final Argon2Advanced argon2Advanced = Argon2Factory.createAdvanced();
 
@@ -48,9 +51,19 @@ public class Util {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
+    // Convert UTF_8 string to byte array
+    public static byte[] utf8ToBytes(String str) {
+        return str.getBytes(StandardCharsets.UTF_8);
+    }
+
     // Convert byte array to Base64 string
     public static String bytesToBase64(byte[] bytes) {
         return Base64.getEncoder().encodeToString(bytes);
+    }
+
+    // Covert Base64 string to byte array
+    public static byte[] base64ToBytes(String base64String) {
+        return Base64.getDecoder().decode(base64String);
     }
 
     // Take plain password, return hash
@@ -68,12 +81,12 @@ public class Util {
         int saltLength = 12;
         byte[] salt = argon2Advanced.generateSalt(saltLength); // Generate a random salt of 12 bytes
         // return both raw byte and the encoded representation
-        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, password.getBytes(StandardCharsets.UTF_8), salt, hashLength, ARGON2_VERSION);
+        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, utf8ToBytes(password), salt, hashLength, ARGON2_VERSION);
     }
 
     public static HashResult hashPassword(String password, byte[] salt, int hashLength) {
         // return both raw byte and the encoded representation
-        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, password.getBytes(StandardCharsets.UTF_8), salt, hashLength, ARGON2_VERSION);
+        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, utf8ToBytes(password), salt, hashLength, ARGON2_VERSION);
     }
 
 
@@ -86,7 +99,7 @@ public class Util {
 
 
     // Generate secret key and IV from password
-    public static String encryptPrivateKey(String password, String privateKey)  {
+    public static String encryptPrivateKey(String password, String base64privateKey)  {
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
         int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
@@ -109,7 +122,7 @@ public class Util {
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IVSpec);
 
             // Encrypt the private key
-            byte[] encryptedPrivateKey = cipher.doFinal(privateKey.getBytes(StandardCharsets.UTF_8));
+            byte[] encryptedPrivateKey = cipher.doFinal(base64ToBytes(base64privateKey)); // Changed from UTF_8 to Base64 cuz privateKey is Base64 decoded.
 
             // Combine the encrypted private key and salt into a single byte array
             byte[] combinedCipherAndSalt = new byte[encryptedPrivateKey.length + salt.length];
@@ -140,12 +153,12 @@ public class Util {
         }
     }
 
-    public static String decryptPrivateKey(String password, String encPrivateKey) {
+    public static String decryptPrivateKey(String password, String base64encPrivateKey) {
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
         int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
 
-        byte[] combinedCipherAndSalt = Base64.getDecoder().decode(encPrivateKey);
+        byte[] combinedCipherAndSalt = base64ToBytes(base64encPrivateKey); 
 
         byte[] salt = new byte[16]; // 16 bytes for salt
         System.arraycopy(combinedCipherAndSalt, combinedCipherAndSalt.length - salt.length, salt, 0, salt.length); // Extract the salt from the end of the byte array
@@ -172,7 +185,7 @@ public class Util {
             // Decrypt the private key
             byte[] decryptedPrivateKey = cipher.doFinal(PRKCipher);
 
-            return bytesToUTF8(decryptedPrivateKey);
+            return bytesToBase64(decryptedPrivateKey);
 
         } catch (NoSuchAlgorithmException noSuchAlgo) {
             System.out.println(" No Such Algorithm exists " + noSuchAlgo);
@@ -216,7 +229,29 @@ public class Util {
         return privateKey.getEncoded();
     }
 
-    // sharedkey generator -- will Curve25519 (bouncy castle)
+    // Curve25519 Shared Key Generator -- takes Base64 encoded private and public keys
+    public static byte[] generateX25519SharedSecret(String privateKey, String publicKey) {
+        // Convert Base64 encoded keys to byte arrays
+        byte[] privateKeyRaw = base64ToBytes(privateKey);
+        byte[] publicKeyRaw = base64ToBytes(publicKey);
+
+        if (privateKeyRaw.length != X25519_SHARED_KEY_LENGTH || publicKeyRaw.length != X25519_SHARED_KEY_LENGTH) {
+            throw new IllegalArgumentException("Invalid key public or private keys length.");
+        }
+
+        // Create parameters for the shared key generation
+        X25519PrivateKeyParameters privateKeyParams = new X25519PrivateKeyParameters(privateKeyRaw, 0);
+        X25519PublicKeyParameters publicKeyParams = new X25519PublicKeyParameters(publicKeyRaw, 0);
+
+        // Generate the shared key using the private and public keys
+        byte[] sharedSecret = new byte[X25519_SHARED_KEY_LENGTH];
+        X25519Agreement agreement = new X25519Agreement();
+        agreement.init(privateKeyParams);
+        agreement.calculateAgreement(publicKeyParams, sharedSecret, 0);
+
+        return sharedSecret;
+    }
+
     // Ed25519 for Curve25519 digital signatures
 
     // Use Eliptic Curve Cryptography (ECC)

@@ -7,13 +7,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 // import org.pexamax.acheron.Util;
+
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.X25519KeyPairGenerator;
 import org.bouncycastle.crypto.params.X25519KeyGenerationParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 
-import java.security.SecureRandom;
+import org.bouncycastle.crypto.agreement.X25519Agreement;
 
 public class UtilTest {
 
@@ -39,14 +40,15 @@ public class UtilTest {
     @Test // Test passed
     void encryptionTest() {
         String password = "Never Gonna Give You Up, Never Gonna Let You Down";
-        String privateKey = "-----BEGIN OPENSSH PRIVATE KEY-----b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAlwAAAAdzc2gtcnNhAAAAAwEAAQAAAYEAzG9x7y8Wq9nUpLHl/b2w9HnqW+Q7M6KUwM4slqQ+0B4rG9pMTvQ3M/UsN2OywH1vz6kqJ6Pcdq+KgxfGr7pBrVhHz92Qk1lY1HlTCtHhp32aKvlkRy5msV6XlGUe+Dr3piI1hJv3rm+Mxql8j31A0QiqI5VqAyG4c4v7NcQJeMYI9c6B13/hkgGcsqmi7Ug2EZf1XEVZvIDa/RJKCNxPdwGJkXQ5nRJ9KmZKsWlSiqRX30LjpGZbp4VqKn+TmgIGKd65byHTnu93rM04HXn3+MItkQZo/fUO5TCBAV3xq8xFs7aC5bCdtL1z4F4v7tbxnl7Z9wx8u8+K2wVztQKuCMLk5aQ96XsY9eJrIQv7AAAAwQJU0DrMyV2Nq7SZQIb6YuXHw8vE6Zxl7T0J0BnUVg58z8/N9OxzwDUt9bApt4OYc8zKU6Qh/tlYQ7ZaO2/fSqajytmtVuXW0OnBfyx41dyKGxTdk6G3Hewhz3xyr9nmjE31v3Z+caBOj5zXU+54fwf6IBXqCZvU3R0JUQW3kA46YzOJwqWHHEdcYZc9U9RfkVUyKqLqExBA==-----END OPENSSH PRIVATE KEY-----";
+        AsymmetricCipherKeyPair keyPair = Util.generateX25519KeyPair();
+        String privateKey = Util.bytesToBase64(Util.getX25519PrivateKey(keyPair));
         String encrypted = Util.encryptPrivateKey(password, privateKey);
         String decrypted = Util.decryptPrivateKey(password, encrypted);
         assertEquals(privateKey, decrypted);
     }
 
-    @Test
-    void x25519Test() {
+    @Test // Test passed
+    void x25519KeyPairGenerationTest() {
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair();
 
         byte[] privateKey = Util.getX25519PrivateKey(X25519KeyPair);
@@ -56,6 +58,30 @@ public class UtilTest {
         System.out.println("Private Key Bytes length: " + privateKey.length);
         System.out.println("Public Key: " +  Util.bytesToBase64(publicKey));
         System.out.println("Public Key Bytes length: " + publicKey.length);
+    }
+
+    @Test // Test passed
+    void X25519SharedKeyGenerationTest() {
+        // 1. Generte Bob's key pair
+        AsymmetricCipherKeyPair bobX25519KeyPair = Util.generateX25519KeyPair();
+
+        String bobPrivateKey = Util.bytesToBase64(Util.getX25519PrivateKey(bobX25519KeyPair));
+        String bobPublicKey = Util.bytesToBase64(Util.getX25519PublicKey(bobX25519KeyPair));
+
+        // 2. Generate ALice's key pair
+        AsymmetricCipherKeyPair aliceX25519KeyPair = Util.generateX25519KeyPair();
+
+        String alicePrivateKey = Util.bytesToBase64(Util.getX25519PrivateKey(aliceX25519KeyPair));
+        String alicePublicKey = Util.bytesToBase64(Util.getX25519PublicKey(aliceX25519KeyPair));
+
+        // 3. Alice computes the shared secret
+        String aliceSharedSecret = Util.bytesToBase64(Util.generateX25519SharedSecret(alicePrivateKey, bobPublicKey));
+
+        // 4. Bob computes the shared secret
+        String bobSharedSecret = Util.bytesToBase64(Util.generateX25519SharedSecret(bobPrivateKey, alicePublicKey));
+
+        // 5. Verify that the shared secrets are the same
+        assertEquals(aliceSharedSecret, bobSharedSecret);
     }
 }
 
