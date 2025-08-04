@@ -34,6 +34,11 @@ public class Util {
     private static final Argon2 argon2 = Argon2Factory.create();
     private static final Argon2Advanced argon2Advanced = Argon2Factory.createAdvanced();
 
+    public static String bytesToString(byte[] bytes) {
+        // Convert byte array to UTF_8 string
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
     // Take plain password, return hash
     public static String hashPassword(String password) {
         // argon2.hash(int iterations, int memory, int parallelism, char[] password)

@@ -2,6 +2,8 @@ package org.pexamax.acheron;
 
 import java.time.Instant;
 
+import org.pexamax.acheron.Util;
+
 public class Message {
 
     private long messageID;
@@ -47,18 +49,25 @@ public class Message {
         this.senderID = senderID;
         this.contentType = contentType;
         // this.content = symDecrypt(encContent, sharedSecret); // Decrypt the content
+        this.content = encContent;
         this.sentTime = sentTime;
         this.readTime = readTime;
         this.destructTime = destructTime;
         this.digitalSignature = digitalSignature; // Verify the signature with the sender's public key
     }
 
+    public long getMessageID() { return messageID; }
+    public long getConversationID() { return conversationID; }
+    public int getDestructTime() { return destructTime; }
     public Instant getSentTime() { return sentTime; }
+    public Instant getReadTime() { return readTime; }
+    public String getDigitalSignature() { return digitalSignature; }
     public long getSenderID() { return senderID; }
+    public String getContentType() { return contentType; }
     public byte[] getContent() { return content; }
 
     @Override
     public String toString() {
-        return (this.getContent() != null ) ? senderID + ": " + new String(this.getContent(), java.nio.charset.StandardCharsets.UTF_8) : "null";
+        return getMessageID() + "\t" + getConversationID() + "\t" + getDestructTime() + "\t" + getSenderID() + "\t" + getSentTime() + "\t" + getContentType() + "\t" + Util.bytesToString(getContent()) + "\t" + getDigitalSignature();
     }
 }

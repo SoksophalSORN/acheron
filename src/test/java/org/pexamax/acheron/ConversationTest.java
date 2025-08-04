@@ -12,12 +12,20 @@ public class ConversationTest {
     @Autowired
     private JdbcTemplate template;
 
-    @Test
+    @Test // Passed
     void testSelectQuery() {
         Conversation conversation1 = new Conversation(1, 2);
         conversation1.setJdbcTemplate(template);
         conversation1.retrieveMessages(201, 20);
         conversation1.displayMessages();
     }
+
+    // @Test
+    // void simpleQueryTest() {
+    //     String sql = "SELECT * FROM message;";
+    //     Conversation conversation2 = new Conversation(1, 2);
+    //     conversation2.setJdbcTemplate(template);
+    //     conversation2.simpleMessageQuery();
+    // }
 }
 

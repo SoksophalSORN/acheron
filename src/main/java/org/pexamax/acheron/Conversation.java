@@ -82,6 +82,31 @@ public class Conversation extends Connection implements Persistable {
         this.template = template;
     }
 
+    // public void simpleMessageQuery() {
+    //     String sql = "SELECT * FROM message WHERE conversation_id = ? ORDER BY sent_time DESC LIMIT ?";
+    //     List<Message> fetchedMessages = template.query(
+    //             sql,
+    //             (rs, rowNum) -> {
+    //                 return new Message(
+    //                         rs.getLong("message_id"),
+    //                         rs.getLong("conversation_id"),
+    //                         rs.getLong("sender_id"),
+    //                         rs.getString("content_type"),
+    //                         rs.getBlob("enc_content").getBytes(1, (int) rs.getBlob("enc_content").length()),
+    //                         rs.getTimestamp("sent_time").toInstant(),
+    //                         rs.getTimestamp("read_time") != null ? rs.getTimestamp("read_time").toInstant() : null,
+    //                         rs.getInt("destruct_timer"),
+    //                         rs.getString("digital_signature"),
+    //                         "sharedSecret"
+    //                     );
+    //             },
+    //             201, 20
+    //         );
+    //     for (Message message : fetchedMessages) {
+    //         message.toString();
+    //     }
+    // }
+
     public void retrieveMessages(long conversation_id, int limit) {
         // If no messages are currently loaded:
         //     fetch messages from the database for the current conversation
@@ -120,7 +145,7 @@ public class Conversation extends Connection implements Persistable {
                 );
 
             if (fetchedMessages != null && !fetchedMessages.isEmpty()) {
-                for (Message message : fetchedMessages) { this.messages.addFirst(message); }
+                this.messages.addAll(fetchedMessages);
                 System.out.println("Fetched " + fetchedMessages.size() + " message objects from the database");
             } else throw new IllegalStateException("No messages found for conversation ID: " + conversation_id);
 
