@@ -24,6 +24,15 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.generators.X25519KeyPairGenerator;
+import org.bouncycastle.crypto.params.X25519KeyGenerationParameters;
+import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
+
+import java.security.SecureRandom;
+
+
 public class Util {
     // Constants for Argon2 parameters
     private static final int ITERATIONS = 2;
@@ -186,7 +195,27 @@ public class Util {
        }
     }
 
-    // public and private key generator -- will use secp256k1 or Curve25519 (bouncy castle)
+    // public and private key generator -- Curve25519 (bouncy castle)
+    public static AsymmetricCipherKeyPair generateX25519KeyPair() {
+        X25519KeyPairGenerator keyPairGenerator = new X25519KeyPairGenerator();
+        keyPairGenerator.init(new X25519KeyGenerationParameters(new SecureRandom()));
+
+        // Generate the key pair
+        return keyPairGenerator.generateKeyPair();
+    }
+
+    // Get the public key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    public static byte[] getX25519PublicKey(AsymmetricCipherKeyPair keyPair) {
+        X25519PublicKeyParameters publicKey = (X25519PublicKeyParameters) keyPair.getPublic();
+        return publicKey.getEncoded();
+    }
+
+    // Get the private key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    public static byte[] getX25519PrivateKey(AsymmetricCipherKeyPair keyPair) {
+        X25519PrivateKeyParameters privateKey = (X25519PrivateKeyParameters) keyPair.getPrivate();
+        return privateKey.getEncoded();
+    }
+
     // sharedkey generator -- will Curve25519 (bouncy castle)
     // Ed25519 for Curve25519 digital signatures
 
