@@ -131,12 +131,12 @@ public class Conversation extends Connection implements Persistable {
                         return new Message(
                             rs.getLong("message_id"),
                             rs.getLong("conversation_id"),
+                            rs.getInt("destruct_timer"),
+                            rs.getTimestamp("sent_time").toInstant(),
+                            readTime,
                             rs.getLong("sender_id"),
                             rs.getString("content_type"),
                             encContent,
-                            rs.getTimestamp("sent_time").toInstant(),
-                            readTime,
-                            rs.getInt("destruct_timer"),
                             rs.getString("digital_signature"),
                             this.sharedSecret
                         );
@@ -156,12 +156,12 @@ public class Conversation extends Connection implements Persistable {
                     (rs, rowNum) -> new Message(
                         rs.getLong("message_id"),
                         rs.getLong("conversation_id"),
+                        rs.getInt("destruct_timer"),
+                        rs.getDate("sent_time").toInstant(),
+                        rs.getDate("read_time").toInstant(),
                         rs.getLong("sender_id"),
                         rs.getString("content_type"),
                         rs.getBlob("content").getBytes(0, (int) rs.getBlob("content").length()),
-                        rs.getDate("sent_time").toInstant(),
-                        rs.getDate("read_time").toInstant(),
-                        rs.getInt("destruct_timer"),
                         rs.getString("digital_signature"),
                         this.sharedSecret
                     ),
@@ -260,8 +260,7 @@ public class Conversation extends Connection implements Persistable {
 
     @Override
     public String toString() {
-        return super.toString() + "isHidden: " + this.hidden + "\n lastMessageSentTimestamp: " + this.lastMessageSentTimestamp + "\n blockerID: " + this.blockerID + "\n destructTimer: " + this.destructTimer + "\n";
-    }
+        return super.toString() + "isHidden: " + this.hidden + "\n lastMessageSentTimestamp: " + this.lastMessageSentTimestamp + "\n blockerID: " + this.blockerID + "\n destructTimer: " + this.destructTimer + "\n"; }
 
     @Override
     public boolean equals(Object convo) {

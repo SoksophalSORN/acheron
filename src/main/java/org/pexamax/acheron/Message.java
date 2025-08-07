@@ -18,7 +18,7 @@ public class Message {
     private String digitalSignature;
 
     // For creating a new message
-    public Message(long conversationID, long senderID, String contentType, byte[] content, int destructTime) {
+    public Message(long conversationID, int destructTime, long senderID, String contentType, byte[] content) {
         this.conversationID = conversationID;
         this.senderID = senderID;
         this.sentTime = Instant.now(); // Set sentTime to current time
@@ -34,12 +34,12 @@ public class Message {
     public Message(
             long messageID,
             long conversationID,
+            int destructTime,
+            Instant sentTime,
+            Instant readTime,
             long senderID,
             String contentType,
             byte[] encContent,
-            Instant sentTime,
-            Instant readTime,
-            int destructTime,
             String digitalSignature,
             // All of the above params are fetched from the database
             String sharedSecret // fetch from conversation

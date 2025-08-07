@@ -9,12 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 // import org.pexamax.acheron.Util;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.generators.X25519KeyPairGenerator;
-import org.bouncycastle.crypto.params.X25519KeyGenerationParameters;
-import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
-import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
-
-import org.bouncycastle.crypto.agreement.X25519Agreement;
 
 public class UtilTest {
 
@@ -84,4 +78,3 @@ public class UtilTest {
         assertEquals(aliceSharedSecret, bobSharedSecret);
     }
 }
-
