@@ -39,6 +39,14 @@ import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
+import org.bouncycastle.crypto.generators.HKDFBytesGenerator;
+import org.bouncycastle.crypto.params.HKDFParameters;
+
+import org.bouncycastle.crypto.DerivationFunction;
+import org.bouncycastle.crypto.DerivationParameters;
+
+import org.bouncycastle.crypto.digests.SHA256Digest;
+
 public class Util {
     // Constants for Argon2 parameters
     private static final int ITERATIONS = 2;
@@ -47,6 +55,9 @@ public class Util {
     private static final de.mkammerer.argon2.Argon2Version ARGON2_VERSION = de.mkammerer.argon2.Argon2Version.V13; // Use Argon2 v1.3; has 2 values: V10 and V13
 
     private static final int X25519_SHARED_KEY_LENGTH = 32; // 32 bytes for X25519 shared key length
+
+    private static final int AES_GCM_256_KEY_LENGTH = 32;
+    private static final int AES_GCM_256_IV_LENGTH = 12;
 
     private static final Argon2 argon2 = Argon2Factory.create();
     private static final Argon2Advanced argon2Advanced = Argon2Factory.createAdvanced();
@@ -104,7 +115,7 @@ public class Util {
 
 
     // Generate secret key and IV from password
-    public static String encryptPrivateKey(String password, String base64privateKey)  {
+    public static byte[] encryptPrivateKey(String password, byte[] privateKeyRaw)  {
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
         int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
@@ -127,7 +138,7 @@ public class Util {
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IVSpec);
 
             // Encrypt the private key
-            byte[] encryptedPrivateKey = cipher.doFinal(base64ToBytes(base64privateKey)); // Changed from UTF_8 to Base64 cuz privateKey is Base64 decoded.
+            byte[] encryptedPrivateKey = cipher.doFinal(privateKeyRaw); // Changed from UTF_8 to Base64 cuz privateKey is Base64 decoded.
 
             // Combine the encrypted private key and salt into a single byte array
             byte[] combinedCipherAndSalt = new byte[encryptedPrivateKey.length + salt.length];
@@ -135,7 +146,7 @@ public class Util {
             System.arraycopy(salt, 0, combinedCipherAndSalt, encryptedPrivateKey.length, salt.length);
             
             // Return the Base64-encoded string of the combined cipher and salt
-            return bytesToBase64(combinedCipherAndSalt);
+            return combinedCipherAndSalt;
 
         } catch (NoSuchAlgorithmException noSuchAlgo) {
             System.out.println(" No Such Algorithm exists " + noSuchAlgo);
@@ -158,18 +169,16 @@ public class Util {
         }
     }
 
-    public static String decryptPrivateKey(String password, String base64encPrivateKey) {
+    public static byte[] decryptPrivateKey(String password, byte[] encPrivateKeyRaw) {
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
         int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
 
-        byte[] combinedCipherAndSalt = base64ToBytes(base64encPrivateKey); 
-
         byte[] salt = new byte[16]; // 16 bytes for salt
-        System.arraycopy(combinedCipherAndSalt, combinedCipherAndSalt.length - salt.length, salt, 0, salt.length); // Extract the salt from the end of the byte array
+        System.arraycopy(encPrivateKeyRaw, encPrivateKeyRaw.length - salt.length, salt, 0, salt.length); // Extract the salt from the end of the byte array
 
-        byte[] PRKCipher = new byte[combinedCipherAndSalt.length - salt.length];
-        System.arraycopy(combinedCipherAndSalt, 0, PRKCipher, 0, PRKCipher.length); // Extract the cipher from the beginning of the byte array
+        byte[] PRKCipher = new byte[encPrivateKeyRaw.length - salt.length];
+        System.arraycopy(encPrivateKeyRaw, 0, PRKCipher, 0, PRKCipher.length); // Extract the cipher from the beginning of the byte array
 
         HashResult passwordHashResult = hashPassword(password, salt, hashLength);
         byte[] rawPassowrdHash = passwordHashResult.getRaw();
@@ -190,7 +199,7 @@ public class Util {
             // Decrypt the private key
             byte[] decryptedPrivateKey = cipher.doFinal(PRKCipher);
 
-            return bytesToBase64(decryptedPrivateKey);
+            return decryptedPrivateKey;
 
         } catch (NoSuchAlgorithmException noSuchAlgo) {
             System.out.println(" No Such Algorithm exists " + noSuchAlgo);
@@ -291,19 +300,123 @@ public class Util {
         return privateKey.getEncoded();
     }
 
-    // public static byte[] signEncryptedMessage(String Base64ed25519PrivateKey, byte[] encMessage) {
+    // Returns a symmetric key that contains 32-byte key and 12-byte IV
+    public static byte[] generateSymmetricKey(byte[] sharedSecret) {
+        if (sharedSecret == null || sharedSecret.length == 0) {
+            System.err.println("Shared secret cannot be null or empty for HKDF derivation.");
+            return null;
+        }
+
+        // We need 32 bytes for the AES-256 key and 12 bytes for the AES-GCM IV.
+        // Total output length required is 32 + 12 = 44 bytes.
+        int outputLength = AES_GCM_256_KEY_LENGTH + AES_GCM_256_IV_LENGTH;
+
+        // Initialize HKDFBytesDerivationFunction with SHA256 digest.
+        // HKDF consists of a "extract" part (PRF) and an "expand" part.
+        // Here, the sharedSecret is the Input Keying Material (IKM).
+        DerivationFunction kdf = new HKDFBytesGenerator(new SHA256Digest());
+
+        // HKDFParameters:
+        // 1. IKM (Input Keying Material): The shared secret from X25519.
+        // 2. Salt: An optional non-secret random value. Recommended for real-world scenarios
+        //    to provide domain separation and strengthen security, but can be null for simplicity
+        //    if no specific salt is available. For production, always use a unique, random salt.
+        // 3. Info: Optional context-specific information. Also recommended for domain separation
+        //    (e.g., "AES-GCM-256 key and IV for message encryption"). Can be null here.
+        DerivationParameters hkdfParams = new HKDFParameters(sharedSecret, null, null);
+        kdf.init(hkdfParams);
+
+        // Allocate a buffer to hold the derived bytes.
+        byte[] derivedBytes = new byte[outputLength];
+
+        // Derive the bytes and fill the buffer.
+        kdf.generateBytes(derivedBytes, 0, outputLength);
+
+        return derivedBytes;
+    }
+
+    
+    // Use Eliptic Curve Cryptography (ECC)
+    //
+    public static byte[] symEncrypt(byte[] symmetricKey, byte[] plaintext) {
+        try {
+            byte[] secretKey = new byte[AES_GCM_256_KEY_LENGTH];
+            byte[] IV = new byte[AES_GCM_256_IV_LENGTH];
+
+            System.arraycopy(symmetricKey, 0, secretKey, 0, AES_GCM_256_KEY_LENGTH); // Copy first 32 bytes for secret key
+            System.arraycopy(symmetricKey, AES_GCM_256_KEY_LENGTH, IV, 0, AES_GCM_256_IV_LENGTH); // Copy next 12 bytes for IV
+
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding"); // AES in GCM mode with no padding
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+            GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag (cryptographic checksum) length
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IVSpec);
+
+            // Encrypt the encrypted message
+            return cipher.doFinal(plaintext);
+
+        } catch (NoSuchAlgorithmException noSuchAlgo) {
+            System.out.println(" No Such Algorithm exists " + noSuchAlgo);
+            return null;
+        } catch (NoSuchPaddingException noSuchPad) {
+            System.out.println(" No Such Padding exists " + noSuchPad);
+            return null;
+        } catch (InvalidKeyException invalidKey) {
+            System.out.println(" Invalid Key " + invalidKey);
+            return null;
+        } catch (BadPaddingException badPadding) {
+            System.out.println(" Bad Padding " + badPadding);
+            return null;
+        } catch (IllegalBlockSizeException illegalBlockSize) {
+            System.out.println(" Illegal Block Size " + illegalBlockSize);
+            return null;
+        } catch (InvalidAlgorithmParameterException invalidParam) {
+            System.out.println(" Invalid Parameter " + invalidParam);
+            return null;
+        }
+    }
+
+    public static byte[] symDecrypt(byte[] symmetricKey, byte[] encMessage) {
+        try {
+            byte[] secretKey = new byte[AES_GCM_256_KEY_LENGTH];
+            byte[] IV = new byte[AES_GCM_256_IV_LENGTH];
+
+            System.arraycopy(symmetricKey, 0, secretKey, 0, AES_GCM_256_KEY_LENGTH); // Copy first 32 bytes for secret key
+            System.arraycopy(symmetricKey, AES_GCM_256_KEY_LENGTH, IV, 0, AES_GCM_256_IV_LENGTH); // Copy next 12 bytes for IV
+
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding"); // AES in GCM mode with no padding
+            SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
+            GCMParameterSpec IVSpec = new GCMParameterSpec(128, IV); // 128-bit tag (cryptographic checksum) length
+            cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, IVSpec);
+
+            // Encrypt the encrypted message
+            return cipher.doFinal(encMessage);
+
+        } catch (NoSuchAlgorithmException noSuchAlgo) {
+            System.out.println(" No Such Algorithm exists " + noSuchAlgo);
+            return null;
+        } catch (NoSuchPaddingException noSuchPad) {
+            System.out.println(" No Such Padding exists " + noSuchPad);
+            return null;
+        } catch (InvalidKeyException invalidKey) {
+            System.out.println(" Invalid Key " + invalidKey);
+            return null;
+        } catch (BadPaddingException badPadding) {
+            System.out.println(" Bad Padding " + badPadding);
+            return null;
+        } catch (IllegalBlockSizeException illegalBlockSize) {
+            System.out.println(" Illegal Block Size " + illegalBlockSize);
+            return null;
+        } catch (InvalidAlgorithmParameterException invalidParam) {
+            System.out.println(" Invalid Parameter " + invalidParam);
+            return null;
+        }
+    }
+
+    // public static byte[] signEncMessage(byte[] edPrivateKey, byte[] encMessage) {
     //     byte[] privateKey = base64ToBytes(Base64ed25519PrivateKey);
     //
     // }
     //
-    // public static byte[] generateAESparameters(byte[] sharedSecret) {
-    //
-    // }
-    
-    // Use Eliptic Curve Cryptography (ECC)
     // public static <type> AsymEncrypt();
     // public static <type> AsymDecrypt();
-    //
-    // public static <type> SymEncrypt();
-    // public static <type> SymDecrypt();
 }
