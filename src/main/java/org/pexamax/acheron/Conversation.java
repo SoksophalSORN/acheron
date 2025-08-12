@@ -92,54 +92,53 @@ public class Conversation extends Connection implements Persistable {
                     sql,
                     (rs, rowNum) -> {
                         Blob contentBlob = rs.getBlob("enc_content");
-                        byte[] encContent = (contentBlob != null) ? contentBlob.getBytes(1, (int) contentBlob.length()) : null;
+                        byte[] encContent = (contentBlob != null) ? contentBlob.getBytes(1, (int) contentBlob.length())
+                                : null;
 
                         Timestamp readTimeTs = rs.getTimestamp("read_time");
                         Instant readTime = (readTimeTs != null) ? readTimeTs.toInstant() : null;
 
                         return new Message(
-                            rs.getLong("message_id"),
-                            rs.getLong("conversation_id"),
-                            rs.getInt("destruct_timer"),
-                            rs.getTimestamp("sent_time").toInstant(),
-                            readTime,
-                            rs.getLong("sender_id"),
-                            rs.getString("content_type"),
-                            encContent,
-                            rs.getString("digital_signature"),
-                            this.sharedSecret
-                        );
+                                rs.getLong("message_id"),
+                                rs.getLong("conversation_id"),
+                                rs.getInt("destruct_timer"),
+                                rs.getTimestamp("sent_time").toInstant(),
+                                readTime,
+                                rs.getLong("sender_id"),
+                                rs.getString("content_type"),
+                                encContent,
+                                rs.getString("digital_signature"),
+                                this.sharedSecret);
                     },
-                    conversation_id, limit
-                );
+                    conversation_id, limit);
 
             if (fetchedMessages != null && !fetchedMessages.isEmpty()) {
                 this.messages.addAll(fetchedMessages);
                 System.out.println("Fetched " + fetchedMessages.size() + " message objects from the database");
-            } else throw new IllegalStateException("No messages found for conversation ID: " + conversation_id);
+            } else
+                throw new IllegalStateException("No messages found for conversation ID: " + conversation_id);
 
         } else {
             String sql = "SELECT * FROM message WHERE sent_time < ? AND conversation_id = ? ORDER BY sent_time DESC LIMIT ?";
             List<Message> fetchedMessages = template.query(
                     sql,
                     (rs, rowNum) -> new Message(
-                        rs.getLong("message_id"),
-                        rs.getLong("conversation_id"),
-                        rs.getInt("destruct_timer"),
-                        rs.getDate("sent_time").toInstant(),
-                        rs.getDate("read_time").toInstant(),
-                        rs.getLong("sender_id"),
-                        rs.getString("content_type"),
-                        rs.getBlob("content").getBytes(0, (int) rs.getBlob("content").length()),
-                        rs.getString("digital_signature"),
-                        this.sharedSecret
-                    ),
-                    messages.getLast().getSentTime(), limit 
-                );
+                            rs.getLong("message_id"),
+                            rs.getLong("conversation_id"),
+                            rs.getInt("destruct_timer"),
+                            rs.getDate("sent_time").toInstant(),
+                            rs.getDate("read_time").toInstant(),
+                            rs.getLong("sender_id"),
+                            rs.getString("content_type"),
+                            rs.getBlob("content").getBytes(0, (int) rs.getBlob("content").length()),
+                            rs.getString("digital_signature"),
+                            this.sharedSecret),
+                    messages.getLast().getSentTime(), limit);
             if (fetchedMessages != null && !fetchedMessages.isEmpty()) {
                 this.messages.addAll(fetchedMessages);
                 System.out.println("Fetched " + fetchedMessages.size() + " message objects from the database");
-            } else throw new IllegalStateException("No messages found for conversation ID: " + conversation_id);
+            } else
+                throw new IllegalStateException("No messages found for conversation ID: " + conversation_id);
         }
     }
 
@@ -150,43 +149,54 @@ public class Conversation extends Connection implements Persistable {
     }
 
     private void setHidden(boolean hidden) {
-        if (this.hidden == hidden) return; 
+        if (this.hidden == hidden)
+            return;
         this.hidden = hidden;
     }
 
     private void setSharedSecret(String sharedSecret) {
-        if (sharedSecret != null && !sharedSecret.isEmpty()) this.sharedSecret = sharedSecret;
-        else throw new IllegalArgumentException("Shared secret cannot be null or empty");
+        if (sharedSecret != null && !sharedSecret.isEmpty())
+            this.sharedSecret = sharedSecret;
+        else
+            throw new IllegalArgumentException("Shared secret cannot be null or empty");
     }
 
     private void setUser1EncSharedSecret() {
         if (user1EncSharedSecret != null && !user1EncSharedSecret.isEmpty()) {
             // Use User1's public key to encrypt the shared secret
             this.user1EncSharedSecret = "encryptedSharedSecretUsingUser1PublicKey";
-        } else throw new IllegalArgumentException("User 1 encrypted shared secret cannot be null or empty");
+        } else
+            throw new IllegalArgumentException("User 1 encrypted shared secret cannot be null or empty");
     }
 
     private void setUser2EncSharedSecret() {
         if (user1EncSharedSecret != null && !user1EncSharedSecret.isEmpty()) {
             // Use User2's public key to encrypt the shared secret
             this.user1EncSharedSecret = "encryptedSharedSecretUsingUser2PublicKey";
-        } else throw new IllegalArgumentException("User 2 encrypted shared secret cannot be null or empty");
+        } else
+            throw new IllegalArgumentException("User 2 encrypted shared secret cannot be null or empty");
     }
 
     private void setLastMessageSentTimestamp(Instant lastMessageSentTimestamp) {
-        if (lastMessageSentTimestamp != null) this.lastMessageSentTimestamp = lastMessageSentTimestamp;
-        else throw new IllegalArgumentException("Current timestamp cannot be null");
+        if (lastMessageSentTimestamp != null)
+            this.lastMessageSentTimestamp = lastMessageSentTimestamp;
+        else
+            throw new IllegalArgumentException("Current timestamp cannot be null");
     }
 
     public void setBlockerID(long blockerID) {
-        if (blockerID >= 0 && blockerID != super.getInitiatorID() && blockerID != super.getReceiverID()) this.blockerID = blockerID;
-        else throw new IllegalArgumentException("Blocker ID cannot be null or empty");
+        if (blockerID >= 0 && blockerID != super.getInitiatorID() && blockerID != super.getReceiverID())
+            this.blockerID = blockerID;
+        else
+            throw new IllegalArgumentException("Blocker ID cannot be null or empty");
     }
 
     public void setDestructTimer(int timer) {
         int oneWeekInSeconds = 604800;
-        if (timer < 0) this.destructTimer = 0; // No destruct timer
-        else if (timer > oneWeekInSeconds) this.destructTimer = oneWeekInSeconds; // Max 7 days 
+        if (timer < 0)
+            this.destructTimer = 0; // No destruct timer
+        else if (timer > oneWeekInSeconds)
+            this.destructTimer = oneWeekInSeconds; // Max 7 days
         // update the database with the new destruct timer
     }
 
@@ -208,6 +218,12 @@ public class Conversation extends Connection implements Persistable {
         // Display the messages in the conversation
     }
 
+    public void deleteConversation() {
+        deleteConnection();
+        // Delete the conversation from the database
+        // This will be called when the user deletes a conversation
+    }
+
     public static boolean areUsersConnected(long user1ID, long user2ID) {
         // Query for the connections between user1 and user2 from conversation table
         // If a connection exists the table, return true
@@ -218,7 +234,7 @@ public class Conversation extends Connection implements Persistable {
     protected boolean deleteConnection() {
         // Used to delete a conversation
         // Delete the conversation from the database first
-        // Then empty the messages collection 
+        // Then empty the messages collection
         // And finally delete the conversation object from the conversations collection
         // return true when succeed, false when failed
         return false;
@@ -238,23 +254,21 @@ public class Conversation extends Connection implements Persistable {
 
     @Override
     public String toString() {
-        return super.toString() + "isHidden: " + this.hidden + "\n lastMessageSentTimestamp: " + this.lastMessageSentTimestamp + "\n blockerID: " + this.blockerID + "\n destructTimer: " + this.destructTimer + "\n"; }
+        return super.toString() + "isHidden: " + this.hidden + "\n lastMessageSentTimestamp: "
+                + this.lastMessageSentTimestamp + "\n blockerID: " + this.blockerID + "\n destructTimer: "
+                + this.destructTimer + "\n";
+    }
 
     @Override
     public boolean equals(Object convo) {
-        if (convo == null || !(convo instanceof Conversation)) return false;
-        return (convo instanceof Conversation) && 
-            this.hidden == ((Conversation)convo).hidden && 
-            this.lastMessageSentTimestamp.equals(((Conversation)convo).lastMessageSentTimestamp) &&
-            this.blockerID == ((Conversation)convo).blockerID &&
-            this.sharedSecret.equals(((Conversation)convo).sharedSecret) &&
-            this.destructTimer == ((Conversation)convo).destructTimer;
-    }
-
-    public void delete() {
-        super.deleteConnection("Conversation");
-        // Delete the conversation from the database
-        // This will be called when the user deletes a conversation 
+        if (convo == null || !(convo instanceof Conversation))
+            return false;
+        return (convo instanceof Conversation) &&
+                this.hidden == ((Conversation) convo).hidden &&
+                this.lastMessageSentTimestamp.equals(((Conversation) convo).lastMessageSentTimestamp) &&
+                this.blockerID == ((Conversation) convo).blockerID &&
+                this.sharedSecret.equals(((Conversation) convo).sharedSecret) &&
+                this.destructTimer == ((Conversation) convo).destructTimer;
     }
 
     public boolean equals(Connection conn) {

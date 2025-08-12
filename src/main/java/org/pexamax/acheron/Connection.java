@@ -40,18 +40,24 @@ public abstract class Connection {
     }
 
     private void setID(long id) {
-        if (id < 1) throw new IllegalArgumentException("ID must be a positive number.");
-        else this.ID = id;
+        if (id < 1)
+            throw new IllegalArgumentException("ID must be a positive number.");
+        else
+            this.ID = id;
     }
 
     private void setInitiatorID(long initiatorID) {
-        if (initiatorID < 1) throw new IllegalArgumentException("Initiator ID must be a positive number.");
-        else this.initiatorID = initiatorID;
+        if (initiatorID < 1)
+            throw new IllegalArgumentException("Initiator ID must be a positive number.");
+        else
+            this.initiatorID = initiatorID;
     }
 
     private void setReceiverID(long receiverID) {
-        if (receiverID < 1) throw new IllegalArgumentException("Receiver ID must be a positive number.");
-        else this.receiverID = receiverID;
+        if (receiverID < 1)
+            throw new IllegalArgumentException("Receiver ID must be a positive number.");
+        else
+            this.receiverID = receiverID;
     }
 
     private void setInitTimestamp(Instant initTimestamp) {
@@ -59,34 +65,38 @@ public abstract class Connection {
             throw new IllegalArgumentException("Initiation timestamp cannot be null.");
         } else if (initTimestamp.isAfter(Instant.now())) {
             throw new IllegalArgumentException("Initiation timestamp cannot be in the future.");
-        } else { this.initTimestamp = initTimestamp; }
+        } else {
+            this.initTimestamp = initTimestamp;
+        }
     }
 
     public static boolean areUsersConnected(long user1ID, long user2ID) {
-        // Query for the connections between user1 and user2 from conversation and request tables
+        // Query for the connections between user1 and user2 from conversation and
+        // request tables
         // If a connection exists in either one of the table, return true
         // else:
         return false;
     }
 
     protected abstract boolean deleteConnection();
-        // Delete the connection from the specified table from the database
-        // based on the initiatorID and receiverID.
-        // Table name can be either "conversation", "request", or "blocked".
-        // Then, remove the connection from the local collection.
+    // Delete the connection from the specified table from the database
+    // based on the initiatorID and receiverID.
+    // Table name can be either "conversation", "request", or "blocked".
+    // Then, remove the connection from the local collection.
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + " Properties:\n Instance ID: " + ID + "\n Initiator ID: " + initiatorID + "\n Receiver ID: " + receiverID + "\n Initiation Timestamp: " + initTimestamp + "\n";
+        return this.getClass().getSimpleName() + " Properties:\n Instance ID: " + ID + "\n Initiator ID: " + initiatorID
+                + "\n Receiver ID: " + receiverID + "\n Initiation Timestamp: " + initTimestamp + "\n";
     }
 
     @Override
     public boolean equals(Object conn) {
         if (conn instanceof Connection) {
-            return this.initiatorID == ((Connection)conn).initiatorID &&
-                this.receiverID == ((Connection)conn).receiverID && 
-                this.initTimestamp.equals(((Connection)conn).initTimestamp);
+            return this.initiatorID == ((Connection) conn).initiatorID &&
+                    this.receiverID == ((Connection) conn).receiverID &&
+                    this.initTimestamp.equals(((Connection) conn).initTimestamp);
         }
         return false;
     }
-
+}
