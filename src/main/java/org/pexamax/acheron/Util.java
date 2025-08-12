@@ -15,6 +15,7 @@ import de.mkammerer.argon2.HashResult;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 // Cipher construction and encryption/decryption
 import javax.crypto.Cipher;
@@ -26,13 +27,17 @@ import javax.crypto.NoSuchPaddingException;
 
 // Bouncy Castle
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+
 import org.bouncycastle.crypto.agreement.X25519Agreement;
 import org.bouncycastle.crypto.generators.X25519KeyPairGenerator;
 import org.bouncycastle.crypto.params.X25519KeyGenerationParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 
-import java.security.SecureRandom;
+import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator;
+import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters;
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
 public class Util {
     // Constants for Argon2 parameters
@@ -217,24 +222,34 @@ public class Util {
         return keyPairGenerator.generateKeyPair();
     }
 
+    // Generate X25519 key pair from Ed25519 key pair
+    public static AsymmetricCipherKeyPair generateX25519KeyPair(byte[] edPrivateKey) {
+        // Create X25519 private key parameters directly from the encoded Ed25519 private key.
+        // Bouncy Castle handles the underlying conversion internally.
+        X25519PrivateKeyParameters xPrivateKey = new X25519PrivateKeyParameters(edPrivateKey);
+
+        // Create X25519 public key parameters directly from the encoded Ed25519 public key.
+        // Bouncy Castle handles the underlying conversion internally.
+        X25519PublicKeyParameters xPublicKey = xPrivateKey.generatePublicKey();
+
+        // Return the new Curve25519 key pair
+        return new AsymmetricCipherKeyPair(xPublicKey, xPrivateKey);
+    } 
+
     // Get the public key from the key pair in bytearray. Use the bytesToBase64 to convert to String
-    public static byte[] getX25519PublicKey(AsymmetricCipherKeyPair keyPair) {
-        X25519PublicKeyParameters publicKey = (X25519PublicKeyParameters) keyPair.getPublic();
+    public static byte[] getX25519PublicKey(AsymmetricCipherKeyPair X25519keyPair) {
+        X25519PublicKeyParameters publicKey = (X25519PublicKeyParameters) X25519keyPair.getPublic();
         return publicKey.getEncoded();
     }
 
     // Get the private key from the key pair in bytearray. Use the bytesToBase64 to convert to String
-    public static byte[] getX25519PrivateKey(AsymmetricCipherKeyPair keyPair) {
-        X25519PrivateKeyParameters privateKey = (X25519PrivateKeyParameters) keyPair.getPrivate();
+    public static byte[] getX25519PrivateKey(AsymmetricCipherKeyPair X25519keyPair) {
+        X25519PrivateKeyParameters privateKey = (X25519PrivateKeyParameters) X25519keyPair.getPrivate();
         return privateKey.getEncoded();
     }
 
     // Curve25519 Shared Key Generator -- takes Base64 encoded private and public keys
-    public static byte[] generateX25519SharedSecret(String privateKey, String publicKey) {
-        // Convert Base64 encoded keys to byte arrays
-        byte[] privateKeyRaw = base64ToBytes(privateKey);
-        byte[] publicKeyRaw = base64ToBytes(publicKey);
-
+    public static byte[] generateX25519SharedSecret(byte[] privateKeyRaw, byte[] publicKeyRaw) {
         if (privateKeyRaw.length != X25519_SHARED_KEY_LENGTH || publicKeyRaw.length != X25519_SHARED_KEY_LENGTH) {
             throw new IllegalArgumentException("Invalid key public or private keys length.");
         }
@@ -252,8 +267,39 @@ public class Util {
         return sharedSecret;
     }
 
-    // Ed25519 for Curve25519 digital signatures
+    public static AsymmetricCipherKeyPair generateEd25519KeyPair() {
+        Ed25519KeyPairGenerator keyPairGenerator = new Ed25519KeyPairGenerator();
 
+        // Initialize the generator with a secure random number generator.
+        // A cryptographically strong random source is crucial for key generation.
+        keyPairGenerator.init(new Ed25519KeyGenerationParameters(new SecureRandom()));
+
+        // Generate the key pair. This returns an AsymmetricCipherKeyPair object,
+        // which holds both the private and public key parameters.
+        return keyPairGenerator.generateKeyPair();
+    }
+
+    // Get the public key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    public static byte[] getEd25519PublicKey(AsymmetricCipherKeyPair Ed25519keyPair) {
+        Ed25519PublicKeyParameters publicKey = (Ed25519PublicKeyParameters) Ed25519keyPair.getPublic();
+        return publicKey.getEncoded();
+    }
+
+    // Get the private key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    public static byte[] getEd25519PrivateKey(AsymmetricCipherKeyPair Ed25519keyPair) {
+        Ed25519PrivateKeyParameters privateKey = (Ed25519PrivateKeyParameters) Ed25519keyPair.getPrivate();
+        return privateKey.getEncoded();
+    }
+
+    // public static byte[] signEncryptedMessage(String Base64ed25519PrivateKey, byte[] encMessage) {
+    //     byte[] privateKey = base64ToBytes(Base64ed25519PrivateKey);
+    //
+    // }
+    //
+    // public static byte[] generateAESparameters(byte[] sharedSecret) {
+    //
+    // }
+    
     // Use Eliptic Curve Cryptography (ECC)
     // public static <type> AsymEncrypt();
     // public static <type> AsymDecrypt();
