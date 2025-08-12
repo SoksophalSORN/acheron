@@ -42,7 +42,7 @@ public class Message {
             byte[] encContent,
             String digitalSignature,
             // All of the above params are fetched from the database
-            String sharedSecret // fetch from conversation
+            byte[] sharedSecret // fetch from conversation
     ) {
         this.messageID = messageID;
         this.conversationID = conversationID;

@@ -18,9 +18,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class Conversation extends Connection implements Persistable {
     private boolean hidden;
-    private String sharedSecret;
-    private String user1EncSharedSecret;
-    private String user2EncSharedSecret;
+    private byte[] sharedSecret;
     private Instant lastMessageSentTimestamp;
     private long blockerID;
     private int destructTimer;
@@ -43,13 +41,9 @@ public class Conversation extends Connection implements Persistable {
         super(user1ID, user2ID);
         setHidden(false);
         setLastMessageSentTimestamp(Instant.now());
-        setSharedSecret("sharedSecret"); // This should be generated securely
+        setSharedSecret(Util.utf8ToBytes("sharedSecret")); // This should be generated securely
         setBlockerID(0); // No blocker initially
         setDestructTimer(0); // No destruct timer initially
-        // String user1EncSharedSecret = asymEncrypt(sharedSecret,
-        // User.getUserPublicKey(user1ID));
-        // String user2EncSharedSecret = asymEncrypt(sharedSecret,
-        // User.getUserPublicKey(user2ID));
     }
 
     // For retrieving data from the database
@@ -58,25 +52,19 @@ public class Conversation extends Connection implements Persistable {
             boolean hidden,
             long user1ID,
             long user2ID,
-            String user1EncSharedSecret,
-            String user2EncSharedSecret,
             Instant createdTimestamp,
             Instant lastMessageSentTimestamp,
             long blockerID,
             int destructTimer,
             // All of the above params are retrieved from the database
-            String currentUserID, // retrieve from client
-            String privateKey // retrieve from client
+            long currentUserID, // retrieve from client
+            byte[] privateKey // retrieve from client
     ) {
         super(conversationID, user1ID, user2ID, createdTimestamp);
         this.setHidden(hidden);
-        this.setUser1EncSharedSecret();
-        this.setUser2EncSharedSecret();
         this.setLastMessageSentTimestamp(lastMessageSentTimestamp);
         this.setBlockerID(blockerID);
         this.setDestructTimer(destructTimer);
-        // this.sharedSecret = asymDecrypt(currentUserID.equals(user1ID) ?
-        // user1EncSharedSecret : user2EncSharedSecret, privateKey);
     }
 
     @Autowired
@@ -154,28 +142,24 @@ public class Conversation extends Connection implements Persistable {
         this.hidden = hidden;
     }
 
-    private void setSharedSecret(String sharedSecret) {
-        if (sharedSecret != null && !sharedSecret.isEmpty())
-            this.sharedSecret = sharedSecret;
-        else
-            throw new IllegalArgumentException("Shared secret cannot be null or empty");
+    private void setSharedSecret(byte[] sharedSecret) {
+        if (sharedSecret != null && sharedSecret.length != 0) this.sharedSecret = sharedSecret;
+        else throw new IllegalArgumentException("Shared secret cannot be null or empty");
     }
-
-    private void setUser1EncSharedSecret() {
-        if (user1EncSharedSecret != null && !user1EncSharedSecret.isEmpty()) {
-            // Use User1's public key to encrypt the shared secret
-            this.user1EncSharedSecret = "encryptedSharedSecretUsingUser1PublicKey";
-        } else
-            throw new IllegalArgumentException("User 1 encrypted shared secret cannot be null or empty");
-    }
-
-    private void setUser2EncSharedSecret() {
-        if (user1EncSharedSecret != null && !user1EncSharedSecret.isEmpty()) {
-            // Use User2's public key to encrypt the shared secret
-            this.user1EncSharedSecret = "encryptedSharedSecretUsingUser2PublicKey";
-        } else
-            throw new IllegalArgumentException("User 2 encrypted shared secret cannot be null or empty");
-    }
+    //
+    // private void setUser1EncSharedSecret() {
+    //     if (user1EncSharedSecret != null && !user1EncSharedSecret.isEmpty()) {
+    //         // Use User1's public key to encrypt the shared secret
+    //         this.user1EncSharedSecret = "encryptedSharedSecretUsingUser1PublicKey";
+    //     } else throw new IllegalArgumentException("User 1 encrypted shared secret cannot be null or empty");
+    // }
+    //
+    // private void setUser2EncSharedSecret() {
+    //     if (user1EncSharedSecret != null && !user1EncSharedSecret.isEmpty()) {
+    //         // Use User2's public key to encrypt the shared secret
+    //         this.user1EncSharedSecret = "encryptedSharedSecretUsingUser2PublicKey";
+    //     } else throw new IllegalArgumentException("User 2 encrypted shared secret cannot be null or empty");
+    // }
 
     private void setLastMessageSentTimestamp(Instant lastMessageSentTimestamp) {
         if (lastMessageSentTimestamp != null)
@@ -261,14 +245,13 @@ public class Conversation extends Connection implements Persistable {
 
     @Override
     public boolean equals(Object convo) {
-        if (convo == null || !(convo instanceof Conversation))
-            return false;
-        return (convo instanceof Conversation) &&
-                this.hidden == ((Conversation) convo).hidden &&
-                this.lastMessageSentTimestamp.equals(((Conversation) convo).lastMessageSentTimestamp) &&
-                this.blockerID == ((Conversation) convo).blockerID &&
-                this.sharedSecret.equals(((Conversation) convo).sharedSecret) &&
-                this.destructTimer == ((Conversation) convo).destructTimer;
+        if (convo == null || !(convo instanceof Conversation)) return false;
+        return (convo instanceof Conversation) && 
+            this.hidden == ((Conversation)convo).hidden && 
+            this.lastMessageSentTimestamp.equals(((Conversation)convo).lastMessageSentTimestamp) &&
+            this.blockerID == ((Conversation)convo).blockerID &&
+            this.sharedSecret.equals(((Conversation)convo).sharedSecret) &&
+            this.destructTimer == ((Conversation)convo).destructTimer;
     }
 
     public boolean equals(Connection conn) {

@@ -13,8 +13,8 @@ public class User implements Persistable {
     private String email;
     private String passwordHash;
     private boolean emailVerified = false;
-    private String publicKey;
-    private String privateKey;
+    private byte[] publicKey;
+    private byte[] privateKey;
 
     // Retrieve user data based on userID
     public User(long userID) {
@@ -30,8 +30,8 @@ public class User implements Persistable {
         this.username = username;
         this.passwordHash = Util.hashPassword(password);
         this.email = email;
-        this.publicKey = "publicKey"; // generate public key
-        this.privateKey = "PrivateKey"; // generated private key
+        this.publicKey = Util.utf8ToBytes("publicKey"); // generate public key
+        this.privateKey = Util.utf8ToBytes("PrivateKey"); // generated private key
     }
 
     public long getUserID() {
