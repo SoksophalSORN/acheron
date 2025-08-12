@@ -55,14 +55,15 @@ public class Conversation extends Connection implements Persistable {
     // For retrieving data from the database
     public Conversation(
             long conversationID,
+            boolean hidden,
             long user1ID,
             long user2ID,
-            boolean hidden,
             String user1EncSharedSecret,
             String user2EncSharedSecret,
             Instant createdTimestamp,
             Instant lastMessageSentTimestamp,
             long blockerID,
+            int destructTimer,
             // All of the above params are retrieved from the database
             String currentUserID, // retrieve from client
             String privateKey // retrieve from client
@@ -73,6 +74,7 @@ public class Conversation extends Connection implements Persistable {
         this.setUser2EncSharedSecret();
         this.setLastMessageSentTimestamp(lastMessageSentTimestamp);
         this.setBlockerID(blockerID);
+        this.setDestructTimer(destructTimer);
         // this.sharedSecret = asymDecrypt(currentUserID.equals(user1ID) ?
         // user1EncSharedSecret : user2EncSharedSecret, privateKey);
     }
@@ -82,41 +84,8 @@ public class Conversation extends Connection implements Persistable {
         this.template = template;
     }
 
-    // public void simpleMessageQuery() {
-    //     String sql = "SELECT * FROM message WHERE conversation_id = ? ORDER BY sent_time DESC LIMIT ?";
-    //     List<Message> fetchedMessages = template.query(
-    //             sql,
-    //             (rs, rowNum) -> {
-    //                 return new Message(
-    //                         rs.getLong("message_id"),
-    //                         rs.getLong("conversation_id"),
-    //                         rs.getLong("sender_id"),
-    //                         rs.getString("content_type"),
-    //                         rs.getBlob("enc_content").getBytes(1, (int) rs.getBlob("enc_content").length()),
-    //                         rs.getTimestamp("sent_time").toInstant(),
-    //                         rs.getTimestamp("read_time") != null ? rs.getTimestamp("read_time").toInstant() : null,
-    //                         rs.getInt("destruct_timer"),
-    //                         rs.getString("digital_signature"),
-    //                         "sharedSecret"
-    //                     );
-    //             },
-    //             201, 20
-    //         );
-    //     for (Message message : fetchedMessages) {
-    //         message.toString();
-    //     }
-    // }
-
+    // Fetch messages for a conversation
     public void retrieveMessages(long conversation_id, int limit) {
-        // If no messages are currently loaded:
-        //     fetch messages from the database for the current conversation
-        //     order by timestamp from newest to oldest
-        // Else:
-        //     fetch messages from the database for the current conversation
-        //     where sent_time < oldest message's sent_time in collection
-        //     order by timestamp from newest to oldest
-        // Insert the fetched messages into the collection in the beginning from most to least recent
-
         if (this.messages.isEmpty()) {
             String sql = "SELECT * FROM message WHERE conversation_id = ? ORDER BY sent_time DESC LIMIT ?";
             List<Message> fetchedMessages = template.query(
@@ -243,6 +212,15 @@ public class Conversation extends Connection implements Persistable {
         // Query for the connections between user1 and user2 from conversation table
         // If a connection exists the table, return true
         // else:
+        return false;
+    }
+
+    protected boolean deleteConnection() {
+        // Used to delete a conversation
+        // Delete the conversation from the database first
+        // Then empty the messages collection 
+        // And finally delete the conversation object from the conversations collection
+        // return true when succeed, false when failed
         return false;
     }
 

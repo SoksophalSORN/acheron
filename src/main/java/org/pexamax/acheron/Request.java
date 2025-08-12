@@ -34,22 +34,29 @@ public class Request extends Connection {
         // displaying the incoming requests from the incoming requests array list
     }
 
-    public void acceptRequest() {
-        // logic to accept the current request
+    public Conversation acceptRequest() {
+        // Delete the request from the request 
+        deleteConnection(); // and then delete the request
+        return new Conversation(getInitiatorID(), getReceiverID());
     }
 
-    public void rejectRequest() {
-        // logic to reject the current request
-    }
-
-    public void cancelRequest() {
-        // logic to cancel the current request
+    // Function to use for rejecting and cancelling a request
+    public void deleteRequest() {
+        deleteConnection();
     }
 
     public static boolean areUsersConnected(long user1ID, long user2ID) {
         // Query for the connections between user1 and user2 from request table
         // If a connection exists the table, return true
         // else:
+        return false;
+    }
+
+    @Override
+    protected boolean deleteConnection() {
+        // Used to accept, reject and cancel user request for initiating conversation
+        // Delete the request from the database
+        // And then the object from the respective array list
         return false;
     }
 

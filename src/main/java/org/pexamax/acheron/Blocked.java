@@ -25,9 +25,19 @@ public class Blocked extends Connection {
         // displaying the blocked users from the blockedUsers array list
     }
 
+    // Unblock a user
     public void unblockUser() {
-        // Unblocking a user by removing them from the blockedUsers list
+        deleteConnection(); 
     }
+
+    protected boolean deleteConnection() {
+        // Delete blocked user from the blocked table
+        // based on the initiatorID and receiverID.
+        // Then, remove the connection from the local collection.
+        // return true if succeed, false if failed
+        return false;
+    }
+
 
     public static boolean areUsersConnected(long user1ID, long user2ID) {
         // Query for the connections between user1 and user2 from blocked table
