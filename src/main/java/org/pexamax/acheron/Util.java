@@ -47,6 +47,8 @@ import org.bouncycastle.crypto.DerivationParameters;
 
 import org.bouncycastle.crypto.digests.SHA256Digest;
 
+import org.bouncycastle.crypto.signers.Ed25519Signer;
+
 public class Util {
     // Constants for Argon2 parameters
     private static final int ITERATIONS = 2;
@@ -412,11 +414,35 @@ public class Util {
         }
     }
 
-    // public static byte[] signEncMessage(byte[] edPrivateKey, byte[] encMessage) {
-    //     byte[] privateKey = base64ToBytes(Base64ed25519PrivateKey);
-    //
-    // }
-    //
+    public static byte[] signEncMessage(byte[] privateKeyRaw, byte[] cipher) {
+        Ed25519PrivateKeyParameters privateKey = new Ed25519PrivateKeyParameters(privateKeyRaw, 0);
+        Ed25519Signer signer = new Ed25519Signer();
+        signer.init(true, privateKey); // true for signing
+        signer.update(cipher, 0, cipher.length);
+        byte[] signature = signer.generateSignature();
+
+        return signature;
+    }
+
+
+    /**
+     * Verifies an Ed25519 digital signature.
+     *
+     * @param publicKey The Ed25519 public key for verification.
+     * @param message   The original message that was signed.
+     * @param signature The digital signature to verify.
+     * @return true if the signature is valid, false otherwise.
+     */
+    public static boolean verifySignature(byte[] publicKeyRaw, byte[] cipher, byte[] signature) {
+        Ed25519PublicKeyParameters publicKey = new Ed25519PublicKeyParameters(publicKeyRaw, 0);
+        Ed25519Signer signer = new Ed25519Signer();
+        signer.init(false, publicKey); // false for verification
+        signer.update(cipher, 0, cipher.length);
+        boolean isValid = signer.verifySignature(signature);
+
+        return isValid;
+    }
+
     // public static <type> AsymEncrypt();
     // public static <type> AsymDecrypt();
 }

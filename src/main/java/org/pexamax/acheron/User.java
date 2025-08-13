@@ -1,5 +1,6 @@
 package org.pexamax.acheron;
 
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.pexamax.acheron.Conversation;
 import org.pexamax.acheron.Util;
 
@@ -30,8 +31,9 @@ public class User implements Persistable {
         this.username = username;
         this.passwordHash = Util.hashPassword(password);
         this.email = email;
-        this.publicKey = Util.utf8ToBytes("publicKey"); // generate public key
-        this.privateKey = Util.utf8ToBytes("PrivateKey"); // generated private key
+        AsymmetricCipherKeyPair Ed25519KeyPair = Util.generateEd25519KeyPair();
+        this.publicKey = Util.getEd25519PublicKey(Ed25519KeyPair); // generate public key
+        this.privateKey = Util.getEd25519PrivateKey(Ed25519KeyPair); // generate private key
     }
 
     public long getUserID() {

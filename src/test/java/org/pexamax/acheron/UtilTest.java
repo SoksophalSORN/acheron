@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 
-
+import java.util.Arrays;
 
 public class UtilTest {
 
@@ -83,8 +83,6 @@ public class UtilTest {
     @Test // passed
     List<byte[]> Ed25519toX25519KeyPairTest() {
         try {
-            System.out.println("--- Generating Bob's Ed25519 Key Pair ---");
-
             // Call the function to generate the Ed25519 key pair
             AsymmetricCipherKeyPair BobEd25519KeyPair = Util.generateEd25519KeyPair();
 
@@ -114,7 +112,13 @@ public class UtilTest {
             // 5. Verify that the shared secrets are the same
             assertEquals(Util.bytesToBase64(aliceSharedSecret), Util.bytesToBase64(bobSharedSecret));
 
-            return List.of(aliceSharedSecret, Util.getEd25519PrivateKey(AliceEd25519KeyPair), Util.getEd25519PublicKey(AliceEd25519KeyPair),bobSharedSecret, Util.getEd25519PrivateKey(BobEd25519KeyPair), Util.getEd25519PublicKey(BobEd25519KeyPair));
+            return List.of(
+                    aliceSharedSecret, 
+                    Util.getEd25519PrivateKey(AliceEd25519KeyPair), 
+                    Util.getEd25519PublicKey(AliceEd25519KeyPair),bobSharedSecret, 
+                    Util.getEd25519PrivateKey(BobEd25519KeyPair), 
+                    Util.getEd25519PublicKey(BobEd25519KeyPair)
+                    );
 
         } catch (Exception e) {
             System.err.println("An error occurred: " + e.getMessage());
@@ -143,17 +147,23 @@ public class UtilTest {
     }
 
     @Test // passed
-    void symmetricEncryptionTest() {
-        List<byte[]> keys = SymmetricKeyGenerationTest();
-        byte[] aliceSymmetricKey = keys.get(0);
-        byte[] bobSymmetricKey = keys.get(1);
+    byte[] symmetricEncryptionAndDigitalSignatureTest() {
+        List<byte[]> keys = Ed25519toX25519KeyPairTest();
+        byte[] alicePrivateKey = keys.get(1);
+        byte[] alicePublicKey = keys.get(2);
+
+        List<byte[]> symkeys = SymmetricKeyGenerationTest();
+        byte[] aliceSymmetricKey = symkeys.get(0);
+        byte[] bobSymmetricKey = symkeys.get(1);
+
         String message = "Never Gonna Give You Up, Never Gonna Let You Down";
         byte[] encryptedMessage = Util.symEncrypt(aliceSymmetricKey, message.getBytes());
-        byte[] decryptedMessage = Util.symDecrypt(bobSymmetricKey, encryptedMessage);
-        System.out.println("Original Message: " + message);
-        System.out.println("Decrypted Message: " + Util.bytesToUTF8(decryptedMessage));
-        assertEquals(message, Util.bytesToUTF8(decryptedMessage));
-    }
+        byte[] digitalSignature = Util.signEncMessage(alicePrivateKey, encryptedMessage);
 
+        assertTrue(Util.verifySignature(alicePublicKey, encryptedMessage, digitalSignature));
+        byte[] decryptedMessage = Util.symDecrypt(bobSymmetricKey, encryptedMessage);
+        assertEquals(message, Util.bytesToUTF8(decryptedMessage));
+        return encryptedMessage;
+    }
 
 }
