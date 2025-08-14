@@ -13,14 +13,13 @@ import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import java.util.Arrays;
 
 public class UtilTest {
-
-    
     @Test // Test passed
     void hashTest() {
         String input = "Never Gonna Give You Up, Never Gonna Let You Down";
-        String salt = "HkYDdC7FvVElPdq8"; 
+        String salt = "HkYDdC7FvVElPdq8";
         int hashLength = 32;
-        assertEquals("$argon2i$v=19$m=65535,t=2,p=1$SGtZRGRDN0Z2VkVsUGRxOA$TsaPqDZd+YDYQKFXvR6SKxKYP3h+XDk+NCHK85/QQYA", Util.hashPassword(input, salt.getBytes(), hashLength).getEncoded());
+        assertEquals("$argon2i$v=19$m=65535,t=2,p=1$SGtZRGRDN0Z2VkVsUGRxOA$TsaPqDZd+YDYQKFXvR6SKxKYP3h+XDk+NCHK85/QQYA",
+                Util.hashPassword(input, salt.getBytes(), hashLength).getEncoded());
         // If this passes, the 2 other hash methods should also pass.
 
     }
@@ -45,15 +44,15 @@ public class UtilTest {
 
     // @Test // Test passed
     // void x25519KeyPairGenerationTest() {
-    //     AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair();
+    // AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair();
     //
-    //     byte[] privateKey = Util.getX25519PrivateKey(X25519KeyPair);
-    //     byte[] publicKey = Util.getX25519PublicKey(X25519KeyPair);
+    // byte[] privateKey = Util.getX25519PrivateKey(X25519KeyPair);
+    // byte[] publicKey = Util.getX25519PublicKey(X25519KeyPair);
     //
-    //     System.out.println("Private Key: " +  Util.bytesToBase64(privateKey));
-    //     System.out.println("Private Key Bytes length: " + privateKey.length);
-    //     System.out.println("Public Key: " +  Util.bytesToBase64(publicKey));
-    //     System.out.println("Public Key Bytes length: " + publicKey.length);
+    // System.out.println("Private Key: " + Util.bytesToBase64(privateKey));
+    // System.out.println("Private Key Bytes length: " + privateKey.length);
+    // System.out.println("Public Key: " + Util.bytesToBase64(publicKey));
+    // System.out.println("Public Key Bytes length: " + publicKey.length);
     // }
 
     @Test // Test passed
@@ -87,7 +86,8 @@ public class UtilTest {
             AsymmetricCipherKeyPair BobEd25519KeyPair = Util.generateEd25519KeyPair();
 
             // Call the function to convert the Ed25519 key pair to Curve25519
-            AsymmetricCipherKeyPair BobCurve25519KeyPair = Util.generateX25519KeyPair(Util.getEd25519PrivateKey(BobEd25519KeyPair));
+            AsymmetricCipherKeyPair BobCurve25519KeyPair = Util
+                    .generateX25519KeyPair(Util.getEd25519PrivateKey(BobEd25519KeyPair));
 
             // Extract and print the Curve25519 private and public keys
             byte[] BobCurvePrivateKey = Util.getX25519PrivateKey(BobCurve25519KeyPair);
@@ -97,28 +97,28 @@ public class UtilTest {
             AsymmetricCipherKeyPair AliceEd25519KeyPair = Util.generateEd25519KeyPair();
 
             // Call the function to convert the Ed25519 key pair to Curve25519
-            AsymmetricCipherKeyPair AliceCurve25519KeyPair = Util.generateX25519KeyPair(Util.getEd25519PrivateKey(AliceEd25519KeyPair));
+            AsymmetricCipherKeyPair AliceCurve25519KeyPair = Util
+                    .generateX25519KeyPair(Util.getEd25519PrivateKey(AliceEd25519KeyPair));
 
             // Extract and print the Curve25519 private and public keys
             byte[] AliceCurvePrivateKey = Util.getX25519PrivateKey(AliceCurve25519KeyPair);
             byte[] AliceCurvePublicKey = Util.getX25519PublicKey(AliceCurve25519KeyPair);
 
             // 3. Alice computes the shared secret
-            byte[] aliceSharedSecret = Util.generateX25519SharedSecret(AliceCurvePrivateKey,BobCurvePublicKey);
+            byte[] aliceSharedSecret = Util.generateX25519SharedSecret(AliceCurvePrivateKey, BobCurvePublicKey);
 
             // 4. Bob computes the shared secret
-            byte[] bobSharedSecret = Util.generateX25519SharedSecret(BobCurvePrivateKey,AliceCurvePublicKey);
+            byte[] bobSharedSecret = Util.generateX25519SharedSecret(BobCurvePrivateKey, AliceCurvePublicKey);
 
             // 5. Verify that the shared secrets are the same
             assertEquals(Util.bytesToBase64(aliceSharedSecret), Util.bytesToBase64(bobSharedSecret));
 
             return List.of(
-                    aliceSharedSecret, 
-                    Util.getEd25519PrivateKey(AliceEd25519KeyPair), 
-                    Util.getEd25519PublicKey(AliceEd25519KeyPair),bobSharedSecret, 
-                    Util.getEd25519PrivateKey(BobEd25519KeyPair), 
-                    Util.getEd25519PublicKey(BobEd25519KeyPair)
-                    );
+                    aliceSharedSecret,
+                    Util.getEd25519PrivateKey(AliceEd25519KeyPair),
+                    Util.getEd25519PublicKey(AliceEd25519KeyPair), bobSharedSecret,
+                    Util.getEd25519PrivateKey(BobEd25519KeyPair),
+                    Util.getEd25519PublicKey(BobEd25519KeyPair));
 
         } catch (Exception e) {
             System.err.println("An error occurred: " + e.getMessage());

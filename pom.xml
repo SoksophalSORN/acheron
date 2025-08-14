@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>org.pexamax</groupId>
 	<artifactId>acheron</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>acheron</name>
-	<description>Real-time E2EE Web Chat App</description>
+	<description>An E2EE Private Messaging App</description>
 	<url/>
 	<licenses>
 		<license/>
