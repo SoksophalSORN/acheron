@@ -5,6 +5,9 @@ import org.pexamax.acheron.Util;
 
 import java.util.ArrayList;
 
+import java.sql.Blob;
+import java.sql.Timestamp;
+
 public class User implements Persistable {
 
     private long userID;
@@ -13,8 +16,10 @@ public class User implements Persistable {
     private String email;
     private String passwordHash;
     private boolean emailVerified = false;
-    private byte[] publicKey;
-    private byte[] privateKey;
+    private byte[] EdPublicKey;
+    private byte[] EdPrivateKey;
+    private byte[] XPublicKey;
+    private byte[] XPrivateKey;
 
     // Retrieve user data based on userID
     public User(long userID) {
@@ -30,8 +35,11 @@ public class User implements Persistable {
         this.passwordHash = Util.hashPassword(password);
         this.email = email;
         AsymmetricCipherKeyPair Ed25519KeyPair = Util.generateEd25519KeyPair();
-        this.publicKey = Util.getEd25519PublicKey(Ed25519KeyPair); // generate public key
-        this.privateKey = Util.getEd25519PrivateKey(Ed25519KeyPair); // generate private key
+        this.EdPublicKey = Util.getEd25519PublicKey(Ed25519KeyPair);
+        this.EdPrivateKey = Util.getEd25519PrivateKey(Ed25519KeyPair);
+        AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
+        this.XPublicKey = Util.getX25519PublicKey(X25519KeyPair);
+        this.XPrivateKey = Util.getX25519PrivateKey(X25519KeyPair);
     }
 
     public long getUserID() {
@@ -79,7 +87,7 @@ public class User implements Persistable {
     }
 
     // Method for registering a new user
-    public static User register(String username, String email, String password) {
+    public static User register(String username, String email, String password, JdbcTemplate template) {
         // Handle registration process with db
         // Check if username or email already exists in the database
         // if (username or email exists) { return null; }
@@ -87,16 +95,32 @@ public class User implements Persistable {
         // Hash the password
         // Save user to the database
         // Return new User object
-        return new User(username, email, password);
+        String sql = "SELECT COUNT(1) FROM users WHERE username = ? OR email = ?";
+        try {
+            long count = template.queryForObject(sql, Integer.class, username, email);
+            if (count > 0) {
+                throw new IllegalArgumentException("Username or email already exists");
+            }
+            return new User(username, email, password);
+        } catch (DataAccessException e) {
+            System.err.println("Error checking for user existence: " + e.getMessage());
+            return null;
+        }
     }
 
     public boolean verifyPassword(String password) {
         return Util.verifyPassword(password, this.passwordHash);
     }
 
-    public String getUserPublicKey(long userID) {
+    public byte[] getUserEdPublicKey(long userID) {
         // Retrieve public key from database by userID
-        String publicKey = "publicKey"; // placeholder
+        byte[] publicKey = Util.utf8ToBytes("publicKey"); // placeholder
+        return publicKey;
+    }
+
+    public byte[] getUserXPublicKey(long userID) {
+        // Retrieve public key from database by userID
+        byte[] publicKey = Util.utf8ToBytes("publicKey"); // placeholder
         return publicKey;
     }
 

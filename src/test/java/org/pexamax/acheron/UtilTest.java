@@ -10,8 +10,6 @@ import java.util.List;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 
-import java.util.Arrays;
-
 public class UtilTest {
     @Test // Test passed
     void hashTest() {
@@ -41,19 +39,6 @@ public class UtilTest {
         byte[] decrypted = Util.decryptPrivateKey(password, encrypted);
         assertEquals(Util.bytesToBase64(privateKey), Util.bytesToBase64(decrypted));
     }
-
-    // @Test // Test passed
-    // void x25519KeyPairGenerationTest() {
-    // AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair();
-    //
-    // byte[] privateKey = Util.getX25519PrivateKey(X25519KeyPair);
-    // byte[] publicKey = Util.getX25519PublicKey(X25519KeyPair);
-    //
-    // System.out.println("Private Key: " + Util.bytesToBase64(privateKey));
-    // System.out.println("Private Key Bytes length: " + privateKey.length);
-    // System.out.println("Public Key: " + Util.bytesToBase64(publicKey));
-    // System.out.println("Public Key Bytes length: " + publicKey.length);
-    // }
 
     @Test // Test passed
     void X25519SharedKeyGenerationTest() {
