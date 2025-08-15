@@ -1,14 +1,13 @@
-package org.pexamax.acheron;
+package org.pexamax.acheron.model;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.pexamax.acheron.Conversation;
 import org.pexamax.acheron.Util;
 
 import java.util.ArrayList;
 
 public class User implements Persistable {
 
-    private long userID; // 64 hexadecimal characters
+    private long userID;
 
     private String username;
     private String email;
@@ -69,11 +68,10 @@ public class User implements Persistable {
         // return false;
     }
 
-    public static User login(String username, String password) {
-        // Retrieve user from database by username
+    public static User login(String email, String password) {
+        // Retrieve user from database by email
         // if (user record exists) {
         // if (Util.verifyPassword(password, passwordHash)) {
-        // construct user object
         // return user object;
         // }
         // }

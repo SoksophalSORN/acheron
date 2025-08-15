@@ -1,4 +1,4 @@
-package org.pexamax.acheron;
+package org.pexamax.acheron.model;
 
 import java.time.Instant;
 

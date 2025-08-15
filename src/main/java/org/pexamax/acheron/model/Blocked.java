@@ -1,4 +1,4 @@
-package org.pexamax.acheron;
+package org.pexamax.acheron.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class Blocked extends Connection {
 
     // Unblock a user
     public void unblockUser() {
-        deleteConnection(); 
+        deleteConnection();
     }
 
     protected boolean deleteConnection() {
@@ -37,7 +37,6 @@ public class Blocked extends Connection {
         // return true if succeed, false if failed
         return false;
     }
-
 
     public static boolean areUsersConnected(long user1ID, long user2ID) {
         // Query for the connections between user1 and user2 from blocked table

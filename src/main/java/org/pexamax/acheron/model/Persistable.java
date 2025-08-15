@@ -1,5 +1,4 @@
-// Package and Imports
-package org.pexamax.acheron;
+package org.pexamax.acheron.model;
 
 public interface Persistable {
 
@@ -8,9 +7,9 @@ public interface Persistable {
     void save();
 
     // Loads the state of the object from persistent storage.
-    // This method should handle any necessary deserialization or database retrieval.
+    // This method should handle any necessary deserialization or database
+    // retrieval.
     void load();
 
     // Basic CRUD operations for the object
 }
-

@@ -54,7 +54,8 @@ public class Util {
     private static final int ITERATIONS = 2;
     private static final int MEMORY = 65535; // 64 MB
     private static final int PARALLELISM = 1; // Single-threaded
-    private static final de.mkammerer.argon2.Argon2Version ARGON2_VERSION = de.mkammerer.argon2.Argon2Version.V13; // Use Argon2 v1.3; has 2 values: V10 and V13
+    // Use Argon2 v1.3; has 2 values: V10 and V13
+    private static final de.mkammerer.argon2.Argon2Version ARGON2_VERSION = de.mkammerer.argon2.Argon2Version.V13;
 
     private static final int X25519_SHARED_KEY_LENGTH = 32; // 32 bytes for X25519 shared key length
 
@@ -87,9 +88,12 @@ public class Util {
     // Take plain password, return hash
     public static String hashPassword(String password) {
         // argon2.hash(int iterations, int memory, int parallelism, char[] password)
-        // iterations: number of iterations (or time cost). Higher means more hashing time and better resistance to brute-force attacks.
-        // memory: memory usage in kilobytes (here, 65536 KB = 64 MB). More memory makes it harder for attackers to use GPUs or ASICs.
-        // parallelism: number of parallel threads or compute lanes used. 1 means single-threaded hashing.
+        // iterations: number of iterations (or time cost). Higher means more hashing
+        // time and better resistance to brute-force attacks.
+        // memory: memory usage in kilobytes (here, 65536 KB = 64 MB). More memory makes
+        // it harder for attackers to use GPUs or ASICs.
+        // parallelism: number of parallel threads or compute lanes used. 1 means
+        // single-threaded hashing.
         // password: nah, you know what this is.
         return argon2.hash(ITERATIONS, MEMORY, PARALLELISM, password.toCharArray());
     }
@@ -99,14 +103,15 @@ public class Util {
         int saltLength = 12;
         byte[] salt = argon2Advanced.generateSalt(saltLength); // Generate a random salt of 12 bytes
         // return both raw byte and the encoded representation
-        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, utf8ToBytes(password), salt, hashLength, ARGON2_VERSION);
+        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, utf8ToBytes(password), salt, hashLength,
+                ARGON2_VERSION);
     }
 
     public static HashResult hashPassword(String password, byte[] salt, int hashLength) {
         // return both raw byte and the encoded representation
-        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, utf8ToBytes(password), salt, hashLength, ARGON2_VERSION);
+        return argon2Advanced.hashAdvanced(ITERATIONS, MEMORY, PARALLELISM, utf8ToBytes(password), salt, hashLength,
+                ARGON2_VERSION);
     }
-
 
     public static boolean verifyPassword(String password, String hash) {
         // argon2.verify(String hash, char[] password)
@@ -115,9 +120,8 @@ public class Util {
         return argon2.verify(hash, password.toCharArray());
     }
 
-
     // Generate secret key and IV from password
-    public static byte[] encryptPrivateKey(String password, byte[] privateKeyRaw)  {
+    public static byte[] encryptPrivateKey(String password, byte[] privateKeyRaw) {
         int secretKeyLength = 16; // 16 bytes for secret key
         int IVLength = 12; // 12 bytes for IV
         int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
@@ -127,10 +131,11 @@ public class Util {
         byte[] rawPassowrdHash = passwordHashResult.getRaw();
 
         byte[] secretKey = new byte[secretKeyLength]; // 32 bytes for AES-GCM secret key
-        System.arraycopy(rawPassowrdHash, 0, secretKey, 0, secretKey.length); // Copy first 32 bytes for secret key from 
+        System.arraycopy(rawPassowrdHash, 0, secretKey, 0, secretKey.length); // Copy first 32 bytes for secret key from
 
         byte[] IV = new byte[IVLength]; // 12 bytes for IV
-        System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length); // Copy next 12 bytes for IV from the raw password hash
+        System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length); // Copy next 12 bytes for IV from the raw
+                                                                               // password hash
 
         // Initialize AES-GCM cipher
         try {
@@ -140,13 +145,14 @@ public class Util {
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, IVSpec);
 
             // Encrypt the private key
-            byte[] encryptedPrivateKey = cipher.doFinal(privateKeyRaw); // Changed from UTF_8 to Base64 cuz privateKey is Base64 decoded.
+            byte[] encryptedPrivateKey = cipher.doFinal(privateKeyRaw); // Changed from UTF_8 to Base64 cuz privateKey
+                                                                        // is Base64 decoded.
 
             // Combine the encrypted private key and salt into a single byte array
             byte[] combinedCipherAndSalt = new byte[encryptedPrivateKey.length + salt.length];
             System.arraycopy(encryptedPrivateKey, 0, combinedCipherAndSalt, 0, encryptedPrivateKey.length);
             System.arraycopy(salt, 0, combinedCipherAndSalt, encryptedPrivateKey.length, salt.length);
-            
+
             // Return the Base64-encoded string of the combined cipher and salt
             return combinedCipherAndSalt;
 
@@ -177,19 +183,24 @@ public class Util {
         int hashLength = secretKeyLength + IVLength; // 28 bytes for secret key
 
         byte[] salt = new byte[16]; // 16 bytes for salt
-        System.arraycopy(encPrivateKeyRaw, encPrivateKeyRaw.length - salt.length, salt, 0, salt.length); // Extract the salt from the end of the byte array
+        System.arraycopy(encPrivateKeyRaw, encPrivateKeyRaw.length - salt.length, salt, 0, salt.length); // Extract the
+                                                                                                         // salt from
+                                                                                                         // the end of
+                                                                                                         // the byte
+                                                                                                         // array
 
         byte[] PRKCipher = new byte[encPrivateKeyRaw.length - salt.length];
-        System.arraycopy(encPrivateKeyRaw, 0, PRKCipher, 0, PRKCipher.length); // Extract the cipher from the beginning of the byte array
+        System.arraycopy(encPrivateKeyRaw, 0, PRKCipher, 0, PRKCipher.length); // Extract the cipher from the beginning
+                                                                               // of the byte array
 
         HashResult passwordHashResult = hashPassword(password, salt, hashLength);
         byte[] rawPassowrdHash = passwordHashResult.getRaw();
 
         byte[] secretKey = new byte[secretKeyLength];
-        System.arraycopy(rawPassowrdHash, 0, secretKey, 0, secretKey.length); 
+        System.arraycopy(rawPassowrdHash, 0, secretKey, 0, secretKey.length);
 
         byte[] IV = new byte[IVLength];
-        System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length); 
+        System.arraycopy(rawPassowrdHash, secretKey.length, IV, 0, IV.length);
 
         // Initialize AES-GCM cipher
         try {
@@ -221,7 +232,7 @@ public class Util {
         } catch (InvalidAlgorithmParameterException invalidParam) {
             System.out.println(" Invalid Parameter " + invalidParam);
             return null;
-       }
+        }
     }
 
     // public and private key generator -- Curve25519 (bouncy castle)
@@ -235,31 +246,36 @@ public class Util {
 
     // Generate X25519 key pair from Ed25519 key pair
     public static AsymmetricCipherKeyPair generateX25519KeyPair(byte[] edPrivateKey) {
-        // Create X25519 private key parameters directly from the encoded Ed25519 private key.
+        // Create X25519 private key parameters directly from the encoded Ed25519
+        // private key.
         // Bouncy Castle handles the underlying conversion internally.
         X25519PrivateKeyParameters xPrivateKey = new X25519PrivateKeyParameters(edPrivateKey);
 
-        // Create X25519 public key parameters directly from the encoded Ed25519 public key.
+        // Create X25519 public key parameters directly from the encoded Ed25519 public
+        // key.
         // Bouncy Castle handles the underlying conversion internally.
         X25519PublicKeyParameters xPublicKey = xPrivateKey.generatePublicKey();
 
         // Return the new Curve25519 key pair
         return new AsymmetricCipherKeyPair(xPublicKey, xPrivateKey);
-    } 
+    }
 
-    // Get the public key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    // Get the public key from the key pair in bytearray. Use the bytesToBase64 to
+    // convert to String
     public static byte[] getX25519PublicKey(AsymmetricCipherKeyPair X25519keyPair) {
         X25519PublicKeyParameters publicKey = (X25519PublicKeyParameters) X25519keyPair.getPublic();
         return publicKey.getEncoded();
     }
 
-    // Get the private key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    // Get the private key from the key pair in bytearray. Use the bytesToBase64 to
+    // convert to String
     public static byte[] getX25519PrivateKey(AsymmetricCipherKeyPair X25519keyPair) {
         X25519PrivateKeyParameters privateKey = (X25519PrivateKeyParameters) X25519keyPair.getPrivate();
         return privateKey.getEncoded();
     }
 
-    // Curve25519 Shared Key Generator -- takes Base64 encoded private and public keys
+    // Curve25519 Shared Key Generator -- takes Base64 encoded private and public
+    // keys
     public static byte[] generateX25519SharedSecret(byte[] privateKeyRaw, byte[] publicKeyRaw) {
         if (privateKeyRaw.length != X25519_SHARED_KEY_LENGTH || publicKeyRaw.length != X25519_SHARED_KEY_LENGTH) {
             throw new IllegalArgumentException("Invalid key public or private keys length.");
@@ -290,13 +306,15 @@ public class Util {
         return keyPairGenerator.generateKeyPair();
     }
 
-    // Get the public key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    // Get the public key from the key pair in bytearray. Use the bytesToBase64 to
+    // convert to String
     public static byte[] getEd25519PublicKey(AsymmetricCipherKeyPair Ed25519keyPair) {
         Ed25519PublicKeyParameters publicKey = (Ed25519PublicKeyParameters) Ed25519keyPair.getPublic();
         return publicKey.getEncoded();
     }
 
-    // Get the private key from the key pair in bytearray. Use the bytesToBase64 to convert to String
+    // Get the private key from the key pair in bytearray. Use the bytesToBase64 to
+    // convert to String
     public static byte[] getEd25519PrivateKey(AsymmetricCipherKeyPair Ed25519keyPair) {
         Ed25519PrivateKeyParameters privateKey = (Ed25519PrivateKeyParameters) Ed25519keyPair.getPrivate();
         return privateKey.getEncoded();
@@ -320,11 +338,15 @@ public class Util {
 
         // HKDFParameters:
         // 1. IKM (Input Keying Material): The shared secret from X25519.
-        // 2. Salt: An optional non-secret random value. Recommended for real-world scenarios
-        //    to provide domain separation and strengthen security, but can be null for simplicity
-        //    if no specific salt is available. For production, always use a unique, random salt.
-        // 3. Info: Optional context-specific information. Also recommended for domain separation
-        //    (e.g., "AES-GCM-256 key and IV for message encryption"). Can be null here.
+        // 2. Salt: An optional non-secret random value. Recommended for real-world
+        // scenarios
+        // to provide domain separation and strengthen security, but can be null for
+        // simplicity
+        // if no specific salt is available. For production, always use a unique, random
+        // salt.
+        // 3. Info: Optional context-specific information. Also recommended for domain
+        // separation
+        // (e.g., "AES-GCM-256 key and IV for message encryption"). Can be null here.
         DerivationParameters hkdfParams = new HKDFParameters(sharedSecret, null, null);
         kdf.init(hkdfParams);
 
@@ -337,7 +359,6 @@ public class Util {
         return derivedBytes;
     }
 
-    
     // Use Eliptic Curve Cryptography (ECC)
     //
     public static byte[] symEncrypt(byte[] symmetricKey, byte[] plaintext) {
@@ -345,8 +366,10 @@ public class Util {
             byte[] secretKey = new byte[AES_GCM_256_KEY_LENGTH];
             byte[] IV = new byte[AES_GCM_256_IV_LENGTH];
 
-            System.arraycopy(symmetricKey, 0, secretKey, 0, AES_GCM_256_KEY_LENGTH); // Copy first 32 bytes for secret key
-            System.arraycopy(symmetricKey, AES_GCM_256_KEY_LENGTH, IV, 0, AES_GCM_256_IV_LENGTH); // Copy next 12 bytes for IV
+            System.arraycopy(symmetricKey, 0, secretKey, 0, AES_GCM_256_KEY_LENGTH); // Copy first 32 bytes for secret
+                                                                                     // key
+            System.arraycopy(symmetricKey, AES_GCM_256_KEY_LENGTH, IV, 0, AES_GCM_256_IV_LENGTH); // Copy next 12 bytes
+                                                                                                  // for IV
 
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding"); // AES in GCM mode with no padding
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
@@ -382,8 +405,10 @@ public class Util {
             byte[] secretKey = new byte[AES_GCM_256_KEY_LENGTH];
             byte[] IV = new byte[AES_GCM_256_IV_LENGTH];
 
-            System.arraycopy(symmetricKey, 0, secretKey, 0, AES_GCM_256_KEY_LENGTH); // Copy first 32 bytes for secret key
-            System.arraycopy(symmetricKey, AES_GCM_256_KEY_LENGTH, IV, 0, AES_GCM_256_IV_LENGTH); // Copy next 12 bytes for IV
+            System.arraycopy(symmetricKey, 0, secretKey, 0, AES_GCM_256_KEY_LENGTH); // Copy first 32 bytes for secret
+                                                                                     // key
+            System.arraycopy(symmetricKey, AES_GCM_256_KEY_LENGTH, IV, 0, AES_GCM_256_IV_LENGTH); // Copy next 12 bytes
+                                                                                                  // for IV
 
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding"); // AES in GCM mode with no padding
             SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "AES");
@@ -423,7 +448,6 @@ public class Util {
 
         return signature;
     }
-
 
     /**
      * Verifies an Ed25519 digital signature.

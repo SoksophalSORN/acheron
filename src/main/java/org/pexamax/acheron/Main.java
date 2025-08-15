@@ -1,5 +1,7 @@
 package org.pexamax.acheron;
 
+import org.pexamax.acheron.model.User;
+
 import javax.smartcardio.Card;
 import javax.swing.*;
 import java.awt.Color;

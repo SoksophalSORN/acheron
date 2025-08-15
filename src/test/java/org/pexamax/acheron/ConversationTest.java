@@ -2,6 +2,7 @@
 package org.pexamax.acheron;
 
 import org.junit.jupiter.api.Test;
+import org.pexamax.acheron.model.Conversation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,13 +11,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class ConversationTest {
 
     @Autowired
-    private JdbcTemplate template;
+    private JdbcTemplate jdbcTemplate;
 
-    // @Test
-    // void simpleQueryTest() {
-    // String sql = "SELECT * FROM message;";
-    // Conversation conversation2 = new Conversation(1, 2);
-    // conversation2.setJdbcTemplate(template);
-    // conversation2.simpleMessageQuery();
-    // }
+    @Test
+    void messageQueryTest() {
+        Conversation conversation = new Conversation(101, 102);
+        conversation.retrieveMessages(5);
+    }
 }

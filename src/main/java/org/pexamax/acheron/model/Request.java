@@ -1,4 +1,4 @@
-package org.pexamax.acheron;
+package org.pexamax.acheron.model;
 
 import java.util.ArrayList;
 import java.time.Instant;
@@ -35,7 +35,7 @@ public class Request extends Connection {
     }
 
     public Conversation acceptRequest() {
-        // Delete the request from the request 
+        // Delete the request from the request
         deleteConnection(); // and then delete the request
         return new Conversation(getInitiatorID(), getReceiverID());
     }
@@ -61,7 +61,7 @@ public class Request extends Connection {
     }
 
     public String toString() {
-        return super.toString(); 
+        return super.toString();
     }
 
     public boolean equals(Object request) {

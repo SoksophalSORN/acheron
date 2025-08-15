@@ -1,4 +1,4 @@
-package org.pexamax.acheron;
+package org.pexamax.acheron.model;
 
 import java.time.Instant;
 
@@ -42,32 +42,59 @@ public class Message {
             byte[] encContent,
             String digitalSignature,
             // All of the above params are fetched from the database
-            byte[] sharedSecret // fetch from conversation
+            byte[] decryptionKey // fetch from conversation
     ) {
         this.messageID = messageID;
         this.conversationID = conversationID;
         this.senderID = senderID;
         this.contentType = contentType;
-        // this.content = symDecrypt(encContent, sharedSecret); // Decrypt the content
-        this.content = encContent;
+        this.content = symDecrypt(decryptionKey, encContent);
         this.sentTime = sentTime;
         this.readTime = readTime;
         this.destructTime = destructTime;
         this.digitalSignature = digitalSignature; // Verify the signature with the sender's public key
     }
 
-    public long getMessageID() { return messageID; }
-    public long getConversationID() { return conversationID; }
-    public int getDestructTime() { return destructTime; }
-    public Instant getSentTime() { return sentTime; }
-    public Instant getReadTime() { return readTime; }
-    public String getDigitalSignature() { return digitalSignature; }
-    public long getSenderID() { return senderID; }
-    public String getContentType() { return contentType; }
-    public byte[] getContent() { return content; }
+    public long getMessageID() {
+        return messageID;
+    }
+
+    public long getConversationID() {
+        return conversationID;
+    }
+
+    public int getDestructTime() {
+        return destructTime;
+    }
+
+    public Instant getSentTime() {
+        return sentTime;
+    }
+
+    public Instant getReadTime() {
+        return readTime;
+    }
+
+    public String getDigitalSignature() {
+        return digitalSignature;
+    }
+
+    public long getSenderID() {
+        return senderID;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
 
     @Override
     public String toString() {
-        return getMessageID() + "\t" + getConversationID() + "\t" + getDestructTime() + "\t" + getSenderID() + "\t" + getSentTime() + "\t" + getContentType() + "\t" + Util.bytesToUTF8(getContent()) + "\t" + getDigitalSignature();
+        return getMessageID() + "\t" + getConversationID() + "\t" + getDestructTime() + "\t" + getSenderID() + "\t"
+                + getSentTime() + "\t" + getContentType() + "\t" + Util.bytesToUTF8(getContent()) + "\t"
+                + getDigitalSignature();
     }
 }
