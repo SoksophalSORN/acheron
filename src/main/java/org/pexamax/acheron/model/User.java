@@ -27,7 +27,7 @@ public class User implements Persistable {
         setEmail(email);
         setEmailVerified(emailVerified);
         setEdPublicKey(EdPublicKey);
-        setEdPrivateKey(Util.decryptPrivateKey(password, encEdPrivateKey));
+        setEdPrivateKey(Util.decryptPrivateKey(password, EdPrivateKey));
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
         setXPublicKey(Util.getX25519PublicKey(X25519KeyPair));
         setXPrivateKey(Util.getX25519PrivateKey(X25519KeyPair));
@@ -133,7 +133,7 @@ public class User implements Persistable {
         // return false;
     }
 
-    public static User login(String email, String password) {
+    public static User login(String email, String password, JdbcTemplate template) {
         String passwordHash = Util.hashPassword(password);
         User currentUser = UserDao.login(email, passwordHash);
         if (currentUser == null)
@@ -143,8 +143,8 @@ public class User implements Persistable {
     }
 
     // Method for registering a new user
-    public static User register(String username, String email, String password) {
-        if (UserDao.isExists(username, email)) {
+    public static User register(String username, String email, String password, JdbcTemplate template) {
+        if (UserDao.isExists(username, email, template)) {
             throw new IllegalArgumentException("Username or email already exists.");
         }
         User newUser = UserDao.register(username, email, password);
@@ -192,10 +192,5 @@ public class User implements Persistable {
     public void save() {
         // Save user data to the database
         // This method should save the current state of the user object to the database
-    }
-
-    @Override
-    public String toString() {
-        return getUserID() + "\t" + getEmail() + "\t" + this.emailVerified;
     }
 }
