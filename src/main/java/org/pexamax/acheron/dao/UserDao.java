@@ -42,4 +42,23 @@ public class UserDao {
             return fetechedUser.getFirst();
         }
     }
+
+    // Method to check if username or email exists
+    public static boolean isExists(String username, String email, JdbcTemplate template) {
+        String sql = "SELECT COUNT(1) FROM users WHERE username = ? OR email = ?";
+        long count = template.queryForObject(sql, Integer.class, username, email);
+        return (count > 0) ? true : false;
+    }
+
+    // Method for registering a new user
+    public static User register(String username, String email, String password, JdbcTemplate template) {
+        User newUser = new User(username, email, password);
+        String sql = "INSERT INTO user (username, email, email_verified, password_hash, public_key, enc_private_key, message_destruct_timer) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        int rowsAffected = template.update(sql, newUser.getUsername(), newUser.getEmail(), false, Util.hashPassword(password), newUser.getEdPublicKey(), Util.encryptPrivateKey(password, newUser.getEdPrivateKey()) , 0);
+        if (rowsAffected > 0) {
+            return newUser;
+        } else {
+            return null;
+        }
+    }
 }
