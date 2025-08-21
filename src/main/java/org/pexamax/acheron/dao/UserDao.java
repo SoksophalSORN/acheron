@@ -76,7 +76,8 @@ public class UserDao {
     }
 
     public static User login(String email, String password) {
-        String sql = "SELECT user_id, username, email, email_verified, password_hash, public_key, enc_private_key, message_destruct_timer FROM user WHERE email = ? AND password_hash = ?";
+        String sql = "SELECT user_id, username, email, email_verified, password_hash, public_key, enc_private_key, message_destruct_timer FROM user WHERE email = ?";
+        String[] passwordHash = new String[1];
         List<User> fetchedUser = QueryTemplate.get().query(
                 sql,
                 (rs, rowNum) -> {
@@ -86,8 +87,9 @@ public class UserDao {
                             : null;
                     Blob encEdPrivateKeyBlob = rs.getBlob("enc_private_key");
                     byte[] encEdPrivateKeyBytes = (encEdPrivateKeyBlob != null)
-                            ? encEdPrivateKeyBlob.getBytes(1, (int) EdPublicKeyBlob.length())
+                            ? encEdPrivateKeyBlob.getBytes(1, (int) encEdPrivateKeyBlob.length())
                             : null;
+                    passwordHash[0] = rs.getString("password_hash");
 
                     return new User(
                             rs.getLong("user_id"),
@@ -98,12 +100,12 @@ public class UserDao {
                             EdPublicKeyBytes,
                             encEdPrivateKeyBytes);
                 },
-                email, Util.hashPassword(password));
+                email);
 
         if (fetchedUser.isEmpty() || fetchedUser.getFirst() == null) {
             return null;
         } else {
-            return fetchedUser.getFirst();
+            return (Util.verifyPassword(password, passwordHash[0])) ? fetchedUser.getFirst() : null;
         }
     }
 
