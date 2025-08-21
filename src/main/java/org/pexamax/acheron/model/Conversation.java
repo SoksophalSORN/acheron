@@ -1,6 +1,7 @@
 package org.pexamax.acheron.model;
 
 import org.pexamax.acheron.Util;
+import org.pexamax.acheron.dao.UserDao;
 import org.pexamax.acheron.dao.MessageDao;
 import org.pexamax.acheron.dao.QueryTemplate;
 
@@ -60,10 +61,27 @@ public class Conversation extends Connection implements Persistable {
         this.setDestructTimer(destructTimer);
     }
 
+    public static Conversation getConversationByPeerName(String peerName) {
+        for (Conversation convo : conversations) {
+            if (convo.getPeer(app.getCurrentUser()).equals(peerName)) {
+                return convo;
+            }
+        }
+        return null; // No conversation found with the given peer name
+    }
+
+    public String getPeer(User currentUser) {
+        if (currentUser.getID() == getInitiatorID())
+            return UserDao.getByID(getReceiverID()).getUsername();
+        else
+            return UserDao.getByID(getInitiatorID()).getUsername();
+    }
+
     // Fetch messages for the current conversation
     // public void retrieveMessages(int limit) {
-    //     QueryTemplate template = new QueryTemplate();
-    //     MessageDao.retrieveMessages(this.getInitiatorID(), 20, messages, symmetricKey, template);
+    // QueryTemplate template = new QueryTemplate();
+    // MessageDao.retrieveMessages(this.getInitiatorID(), 20, messages,
+    // symmetricKey, template);
     // }
 
     public void displayMessages() {
@@ -128,9 +146,10 @@ public class Conversation extends Connection implements Persistable {
         return this.destructTimer;
     }
 
-    public static void retrieveConversations() {
+    public static TreeSet<Conversation> retrieveConversations() {
         // Retrieve 10 conversations at a time based on the userID
         // Then add them to their respective collection whether they are hidden or not
+        return conversations;
     }
 
     public static void listConversations(boolean hidden) {
@@ -153,6 +172,16 @@ public class Conversation extends Connection implements Persistable {
         // If a connection exists the table, return true
         // else:
         return false;
+    }
+
+    public sendMessage(Message message) {
+        // Send a message to the conversation
+        // Add the message to the messages collection
+        // Update the lastMessageSentTimestamp
+        // Insert the message to the database
+        messages.add(message);
+        setLastMessageSentTimestamp(Instant.now());
+        MessageDao.saveMessage(message, symmetricKey);
     }
 
     protected boolean deleteConnection() {

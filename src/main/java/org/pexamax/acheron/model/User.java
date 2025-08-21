@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.sql.Blob;
 import java.sql.Timestamp;
 
-
 public class User implements Persistable {
 
     private long userID;
@@ -26,7 +25,7 @@ public class User implements Persistable {
     private byte[] XPrivateKey;
 
     // For retrieving user data
-    public User(long userID, String username, String email, String password, boolean emailVerified, 
+    public User(long userID, String username, String email, String password, boolean emailVerified,
             byte[] EdPublicKey, byte[] encEdPrivateKey) {
         setUserID(userID);
         setUsername(username);
@@ -44,7 +43,8 @@ public class User implements Persistable {
         setUsername(username);
         setEmail(email);
         AsymmetricCipherKeyPair Ed25519KeyPair = Util.generateEd25519KeyPair();
-        setEdPublicKey(Util.getEd25519PublicKey(Ed25519KeyPair)); ;
+        setEdPublicKey(Util.getEd25519PublicKey(Ed25519KeyPair));
+        ;
         setEdPrivateKey(Util.getEd25519PrivateKey(Ed25519KeyPair));
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
         setXPublicKey(Util.getX25519PublicKey(X25519KeyPair));
@@ -150,7 +150,8 @@ public class User implements Persistable {
         User currentUser = UserDao.login(email, passwordHash, template);
         if (currentUser == null) {
             throw new IllegalArgumentException("Invalid email or password");
-        } else return currentUser;
+        } else
+            return currentUser;
     }
 
     // Method for registering a new user
