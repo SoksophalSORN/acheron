@@ -14,7 +14,6 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.springframework.boot.SpringApplication;
@@ -23,7 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class Main {
 
-    @Autowired
     private static JdbcTemplate jdbcTemplate;
 
     public static void main(String[] args) {
@@ -133,7 +131,7 @@ public class Main {
                     return;
                 }
 
-                user = User.login(email, password);
+                user = User.login(email, password, QueryTemplate.get());
                 if (user == null) {
                     loginErrorLabel.setText("Invalid email or password.");
                 } else {
@@ -219,7 +217,7 @@ public class Main {
                     return;
                 }
 
-                user = User.register(username, email, password);
+                user = User.register(username, email, password, QueryTemplate.get());
                 if (user == null) {
                     signupErrorLabel.setText("Signup failed. Please try again.");
                 } else {

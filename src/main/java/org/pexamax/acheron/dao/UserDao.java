@@ -45,7 +45,7 @@ public class UserDao {
 
     // Method to check if username or email exists
     public static boolean isExists(String username, String email, JdbcTemplate template) {
-        String sql = "SELECT COUNT(1) FROM users WHERE username = ? OR email = ?";
+        String sql = "SELECT COUNT(1) FROM user WHERE username = ? OR email = ?";
         long count = template.queryForObject(sql, Integer.class, username, email);
         return (count > 0) ? true : false;
     }
