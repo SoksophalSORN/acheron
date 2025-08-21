@@ -5,6 +5,6 @@ import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-public class Conversation {
+public class BlockedDao {
 
 }

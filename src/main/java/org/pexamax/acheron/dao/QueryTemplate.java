@@ -1,19 +1,17 @@
 package org.pexamax.acheron.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
-public class QueryTemplate {
-    private JdbcTemplate jdbcTemplate;
+public abstract class QueryTemplate {
+    private static JdbcTemplate template;
 
     @Autowired
-    public QueryTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public static void set(JdbcTemplate jdbcTemplate) {
+        template = jdbcTemplate;
     }
 
-    public JdbcTemplate get() {
-        return jdbcTemplate;
+    public static JdbcTemplate get() {
+        return template;
     }
 }

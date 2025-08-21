@@ -3,6 +3,8 @@ package org.pexamax.acheron;
 
 import org.junit.jupiter.api.Test;
 import org.pexamax.acheron.model.Conversation;
+import org.pexamax.acheron.dao.ConversationDao;
+import org.pexamax.acheron.dao.QueryTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +17,9 @@ public class ConversationTest {
 
     @Test
     void messageQueryTest() {
-        Conversation conversation = new Conversation(101, 102);
-        conversation.retrieveMessages(5);
+        System.out.println("Hello");
+        ConversationDao.Hello();
+        QueryTemplate.set(jdbcTemplate);
+        ConversationDao.simpleQuery();
     }
 }

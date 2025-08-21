@@ -1,5 +1,7 @@
 package org.pexamax.acheron.model;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 public interface Persistable {
 
     // Saves the current state of the object to persistent storage.

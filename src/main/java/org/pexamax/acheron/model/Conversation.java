@@ -1,25 +1,19 @@
 package org.pexamax.acheron.model;
 
 import org.pexamax.acheron.Util;
+import org.pexamax.acheron.dao.MessageDao;
+import org.pexamax.acheron.dao.QueryTemplate;
 
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.TreeSet;
-import java.util.List;
 
-import java.sql.Blob;
-import java.sql.Timestamp;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
 
 public class Conversation extends Connection implements Persistable {
     private boolean hidden;
-    private byte[] sharedSecret;
+    private byte[] symmetricKey;
     private Instant lastMessageSentTimestamp;
     private long blockerID;
     private int destructTimer;
@@ -40,7 +34,7 @@ public class Conversation extends Connection implements Persistable {
         super(user1ID, user2ID);
         setHidden(false);
         setLastMessageSentTimestamp(Instant.now());
-        setSharedSecret(Util.utf8ToBytes("sharedSecret")); // This should be generated securely
+        setSymmetricKey(Util.utf8ToBytes("sharedSecret")); // This should be generated securely
         setBlockerID(0); // No blocker initially
         setDestructTimer(0); // No destruct timer initially
     }
@@ -67,9 +61,10 @@ public class Conversation extends Connection implements Persistable {
     }
 
     // Fetch messages for the current conversation
-    public void retrieveMessages(int limit) {
-
-    }
+    // public void retrieveMessages(int limit) {
+    //     QueryTemplate template = new QueryTemplate();
+    //     MessageDao.retrieveMessages(this.getInitiatorID(), 20, messages, symmetricKey, template);
+    // }
 
     public void displayMessages() {
         for (Message message : messages) {
@@ -83,9 +78,9 @@ public class Conversation extends Connection implements Persistable {
         this.hidden = hidden;
     }
 
-    private void setSharedSecret(byte[] sharedSecret) {
+    private void setSymmetricKey(byte[] sharedSecret) {
         if (sharedSecret != null && sharedSecret.length != 0)
-            this.sharedSecret = sharedSecret;
+            this.symmetricKey = sharedSecret;
         else
             throw new IllegalArgumentException("Shared secret cannot be null or empty");
     }
@@ -183,9 +178,9 @@ public class Conversation extends Connection implements Persistable {
 
     @Override
     public String toString() {
-        return super.toString() + "isHidden: " + this.hidden + "\n lastMessageSentTimestamp: "
-                + this.lastMessageSentTimestamp + "\n blockerID: " + this.blockerID + "\n destructTimer: "
-                + this.destructTimer + "\n";
+        return super.toString() + "\t" + this.hidden + "\t"
+                + this.lastMessageSentTimestamp + "\t" + this.blockerID + "\t"
+                + this.destructTimer + "\t";
     }
 
     @Override
@@ -196,7 +191,7 @@ public class Conversation extends Connection implements Persistable {
                 this.hidden == ((Conversation) convo).hidden &&
                 this.lastMessageSentTimestamp.equals(((Conversation) convo).lastMessageSentTimestamp) &&
                 this.blockerID == ((Conversation) convo).blockerID &&
-                this.sharedSecret.equals(((Conversation) convo).sharedSecret) &&
+                Util.bytesToBase64(this.symmetricKey).equals(Util.bytesToBase64(((Conversation) convo).symmetricKey)) &&
                 this.destructTimer == ((Conversation) convo).destructTimer;
     }
 

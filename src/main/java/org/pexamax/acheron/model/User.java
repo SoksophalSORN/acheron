@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.sql.Blob;
 import java.sql.Timestamp;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 public class User implements Persistable {
 
     private long userID;
@@ -22,11 +24,15 @@ public class User implements Persistable {
     private byte[] XPrivateKey;
 
     // Retrieve user data based on userID
-    public User(long userID) {
-        this.userID = userID;
-        // Load user data from the database
-        load();
-        // User(all the loaded fields);
+    public User(String username, String email, String passwordHash, boolean emailVerified, byte[] EdPublicKey, byte[] EdPrivateKey, byte[] XPublicKey, byte[] XPrivateKey) {
+        setUsername(username);
+        setEmail(email);
+        setPasswordHash(passwordHash);
+        setEmailVerified(emailVerified);
+        setEdPublicKey(EdPublicKey);
+        setEdPrivateKey(EdPrivateKey);
+        setXPublicKey(XPublicKey);
+        setXPrivateKey(XPrivateKey);
     }
 
     // For registration
@@ -40,6 +46,59 @@ public class User implements Persistable {
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
         this.XPublicKey = Util.getX25519PublicKey(X25519KeyPair);
         this.XPrivateKey = Util.getX25519PrivateKey(X25519KeyPair);
+    }
+
+    private void setUsername(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        this.username = username;
+    }
+
+    private void setEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        this.email = email;
+    }
+
+    private void setPasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isEmpty()) {
+            throw new IllegalArgumentException("Password hash cannot be null or empty");
+        }
+        this.passwordHash = passwordHash;
+    }
+
+    private void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    private void setEdPublicKey(byte[] edPublicKey) {
+        if (edPublicKey == null || edPublicKey.length == 0) {
+            throw new IllegalArgumentException("ED Public Key cannot be null or empty");
+        }
+        this.EdPublicKey = edPublicKey;
+    }
+
+    private void setEdPrivateKey(byte[] edPrivateKey) {
+        if (edPrivateKey == null || edPrivateKey.length == 0) {
+            throw new IllegalArgumentException("ED Private Key cannot be null or empty");
+        }
+        this.EdPrivateKey = edPrivateKey;
+    }
+
+    private void setXPublicKey(byte[] xPublicKey) {
+        if (xPublicKey == null || xPublicKey.length == 0) {
+            throw new IllegalArgumentException("X Public Key cannot be null or empty");
+        }
+        this.XPublicKey = xPublicKey;
+    }
+
+    private void setXPrivateKey(byte[] xPrivateKey) {
+        if (xPrivateKey == null || xPrivateKey.length == 0) {
+            throw new IllegalArgumentException("X Private Key cannot be null or empty");
+        }
+        this.XPrivateKey = xPrivateKey;
     }
 
     public long getUserID() {
@@ -96,16 +155,11 @@ public class User implements Persistable {
         // Save user to the database
         // Return new User object
         String sql = "SELECT COUNT(1) FROM users WHERE username = ? OR email = ?";
-        try {
-            long count = template.queryForObject(sql, Integer.class, username, email);
-            if (count > 0) {
-                throw new IllegalArgumentException("Username or email already exists");
-            }
-            return new User(username, email, password);
-        } catch (DataAccessException e) {
-            System.err.println("Error checking for user existence: " + e.getMessage());
-            return null;
+        long count = template.queryForObject(sql, Integer.class, username, email);
+        if (count > 0) {
+            throw new IllegalArgumentException("Username or email already exists");
         }
+        return new User(username, email, password);
     }
 
     public boolean verifyPassword(String password) {
