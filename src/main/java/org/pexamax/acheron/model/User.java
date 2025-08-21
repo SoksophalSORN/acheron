@@ -1,14 +1,17 @@
 package org.pexamax.acheron.model;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.pexamax.acheron.Util;
+import org.pexamax.acheron.dao.UserDao;
+
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
 
 import java.sql.Blob;
 import java.sql.Timestamp;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public class User implements Persistable {
 
@@ -16,36 +19,43 @@ public class User implements Persistable {
 
     private String username;
     private String email;
-    private String passwordHash;
     private boolean emailVerified = false;
     private byte[] EdPublicKey;
     private byte[] EdPrivateKey;
     private byte[] XPublicKey;
     private byte[] XPrivateKey;
 
-    // Retrieve user data based on userID
-    public User(String username, String email, String passwordHash, boolean emailVerified, byte[] EdPublicKey, byte[] EdPrivateKey, byte[] XPublicKey, byte[] XPrivateKey) {
+    // For retrieving user data
+    public User(long userID, String username, String email, String password, boolean emailVerified, 
+            byte[] EdPublicKey, byte[] encEdPrivateKey) {
+        setUserID(userID);
         setUsername(username);
         setEmail(email);
-        setPasswordHash(passwordHash);
         setEmailVerified(emailVerified);
         setEdPublicKey(EdPublicKey);
-        setEdPrivateKey(EdPrivateKey);
-        setXPublicKey(XPublicKey);
-        setXPrivateKey(XPrivateKey);
+        setEdPrivateKey(Util.decryptPrivateKey(password, EdPrivateKey));
+        AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
+        setXPublicKey(Util.getX25519PublicKey(X25519KeyPair));
+        setXPrivateKey(Util.getX25519PrivateKey(X25519KeyPair));
     }
 
     // For registration
     public User(String username, String email, String password) {
-        this.username = username;
-        this.passwordHash = Util.hashPassword(password);
-        this.email = email;
+        setUsername(username);
+        setEmail(email);
         AsymmetricCipherKeyPair Ed25519KeyPair = Util.generateEd25519KeyPair();
-        this.EdPublicKey = Util.getEd25519PublicKey(Ed25519KeyPair);
-        this.EdPrivateKey = Util.getEd25519PrivateKey(Ed25519KeyPair);
+        setEdPublicKey(Util.getEd25519PublicKey(Ed25519KeyPair)); ;
+        setEdPrivateKey(Util.getEd25519PrivateKey(Ed25519KeyPair));
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
-        this.XPublicKey = Util.getX25519PublicKey(X25519KeyPair);
-        this.XPrivateKey = Util.getX25519PrivateKey(X25519KeyPair);
+        setXPublicKey(Util.getX25519PublicKey(X25519KeyPair));
+        setXPrivateKey(Util.getX25519PrivateKey(X25519KeyPair));
+    }
+
+    private void setUserID(long userID) {
+        if (userID <= 0) {
+            throw new IllegalArgumentException("User ID must be a positive number");
+        }
+        this.userID = userID;
     }
 
     private void setUsername(String username) {
@@ -135,14 +145,12 @@ public class User implements Persistable {
         // return false;
     }
 
-    public static User login(String email, String password) {
-        // Retrieve user from database by email
-        // if (user record exists) {
-        // if (Util.verifyPassword(password, passwordHash)) {
-        // return user object;
-        // }
-        // }
-        return null;
+    public static User login(String email, String password, JdbcTemplate template) {
+        String passwordHash = Util.hashPassword(password);
+        User currentUser = UserDao.login(email, passwordHash, template);
+        if (currentUser == null) {
+            throw new IllegalArgumentException("Invalid email or password");
+        } else return currentUser;
     }
 
     // Method for registering a new user
