@@ -75,7 +75,23 @@ public class UserDao {
         }
     }
 
+    // Method to check if username or email exists
+    public static boolean isExists(String username, String email) {
+        String sql = "SELECT COUNT(1) FROM user WHERE username = ? OR email = ?";
+        long count = QueryTemplate.get().queryForObject(sql, Integer.class, username, email);
+        return (count > 0) ? true : false;
+    }
+
+    // Method for registering a new user
     public static User register(String username, String email, String password) {
-        return null; // Registration logic to be implemented
+        User newUser = new User(username, email, password);
+        String sql = "INSERT INTO user (username, email, email_verified, password_hash, public_key, enc_private_key, message_destruct_timer) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        int rowsAffected = QueryTemplate.get().update(sql, newUser.getUsername(), newUser.getEmail(), false,
+                Util.hashPassword(password), newUser.getEdPublicKey(),
+                Util.encryptPrivateKey(password, newUser.getEdPrivateKey()), 0);
+        if (rowsAffected > 0)
+            return newUser;
+        else
+            return null;
     }
 }

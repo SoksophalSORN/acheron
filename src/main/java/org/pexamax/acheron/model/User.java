@@ -7,11 +7,6 @@ import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.ArrayList;
-
-import java.sql.Blob;
-import java.sql.Timestamp;
-
 public class User implements Persistable {
 
     private long userID;
@@ -70,13 +65,6 @@ public class User implements Persistable {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
         this.email = email;
-    }
-
-    private void setPasswordHash(String passwordHash) {
-        if (passwordHash == null || passwordHash.isEmpty()) {
-            throw new IllegalArgumentException("Password hash cannot be null or empty");
-        }
-        this.passwordHash = passwordHash;
     }
 
     private void setEmailVerified(boolean emailVerified) {
@@ -156,23 +144,23 @@ public class User implements Persistable {
 
     // Method for registering a new user
     public static User register(String username, String email, String password, JdbcTemplate template) {
-        // Handle registration process with db
-        // Check if username or email already exists in the database
-        // if (username or email exists) { return null; }
-        // Generate userID and public/private keys
-        // Hash the password
-        // Save user to the database
-        // Return new User object
-        String sql = "SELECT COUNT(1) FROM users WHERE username = ? OR email = ?";
-        long count = template.queryForObject(sql, Integer.class, username, email);
-        if (count > 0) {
-            throw new IllegalArgumentException("Username or email already exists");
+        if (UserDao.isExists(username, email, template)) {
+            throw new IllegalArgumentException("Username or email already exists.");
         }
-        return new User(username, email, password);
+        User newUser = UserDao.register(username, email, password, template);
+        if (newUser == null) {
+            throw new IllegalArgumentException("Registration failed. User already exists or invalid data.");
+        } else {
+            return newUser;
+        }
     }
 
-    public boolean verifyPassword(String password) {
-        return Util.verifyPassword(password, this.passwordHash);
+    public byte[] getEdPublicKey() {
+        return this.EdPublicKey;
+    }
+
+    public byte[] getEdPrivateKey() {
+        return this.EdPrivateKey;
     }
 
     public byte[] getUserEdPublicKey(long userID) {
@@ -181,11 +169,11 @@ public class User implements Persistable {
         return publicKey;
     }
 
-    public byte[] getUserXPublicKey(long userID) {
-        // Retrieve public key from database by userID
-        byte[] publicKey = Util.utf8ToBytes("publicKey"); // placeholder
-        return publicKey;
-    }
+    // public byte[] getUserXPublicKey(long userID) {
+    // // Retrieve public key from database by userID
+    // byte[] publicKey = Util.utf8ToBytes("publicKey"); // placeholder
+    // return publicKey;
+    // }
 
     @Override
     public void load() {
