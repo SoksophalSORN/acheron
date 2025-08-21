@@ -27,7 +27,7 @@ public class User implements Persistable {
         setEmail(email);
         setEmailVerified(emailVerified);
         setEdPublicKey(EdPublicKey);
-        setEdPrivateKey(Util.decryptPrivateKey(password, EdPrivateKey));
+        setEdPrivateKey(Util.decryptPrivateKey(password, encEdPrivateKey));
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
         setXPublicKey(Util.getX25519PublicKey(X25519KeyPair));
         setXPrivateKey(Util.getX25519PrivateKey(X25519KeyPair));
@@ -192,5 +192,10 @@ public class User implements Persistable {
     public void save() {
         // Save user data to the database
         // This method should save the current state of the user object to the database
+    }
+
+    @Override
+    public String toString() {
+        return getUserID() + "\t" + getEmail() + "\t" + this.emailVerified;
     }
 }

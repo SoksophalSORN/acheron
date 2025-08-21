@@ -7,7 +7,7 @@ import java.sql.Blob;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.LinkedList;
-import java.util.List;;
+import java.util.List;
 
 public class UserDao {
 

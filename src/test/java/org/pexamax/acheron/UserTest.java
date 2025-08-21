@@ -41,14 +41,37 @@ public class UserTest {
     }
 
     @Test
-    public void userReqistrationSuccessTest() {
+    public void userRegistrationSuccessTest() {
         // Valid Case
         QueryTemplate.set(template);
-        User Sophal = User.register("sophal", "sophal@example.com", "securepassword");
+        // User Sophal = User.register("sophal", "sophal@example.com", "securepassword",
+        // QueryTemplate.get()); done already before
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-            User Sophal2 = User.register("sophal", "sophal@example.com", "securepassword");
+            User Sophal = User.register("sophal", "sophal@example.com", "securepassword");
         });
         assertEquals("Username or email already exists.", ex.getMessage());
     }
+
+    @Test
+    public void userLoginTestWithDao() {
+        // Valid Case
+        QueryTemplate.set(template);
+        User Sophal = UserDao.login("sophal@example.com", "securepassword");
+        System.out.println(Sophal);
+    }
+
+    // @Test
+    // public void userLoginTest() {
+    // // Valid Case
+    // QueryTemplate.set(template);
+    // User Sophal = User.login("sophal", "securepassword", QueryTemplate.get());
+    // assertNotNull(Sophal);
+    // // // Invalid Case
+    // // IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+    // () -> {
+    // // User Sophal2 = User.login("sophal", "wrongpassword", QueryTemplate.get());
+    // // });
+    // // assertEquals("Invalid username or password.", ex.getMessage());
+    // }
 }
