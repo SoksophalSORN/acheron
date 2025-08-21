@@ -1,7 +1,6 @@
 package org.pexamax.acheron;
 
 import org.pexamax.acheron.views.AppInterface;
-import org.pexamax.acheron.views.AuthInterface;
 
 import org.pexamax.acheron.dao.QueryTemplate;
 
@@ -31,7 +30,7 @@ public class Main {
     public static void main(String[] args) {
         QueryTemplate.set(jdbcTemplate);
 
-        User user;
+        User user = null;
         SwingUtilities.invokeLater(() -> new AppInterface(user).setVisible(true));
 
         SpringApplication.run(Main.class, args);

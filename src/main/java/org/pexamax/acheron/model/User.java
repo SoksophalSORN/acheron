@@ -133,26 +133,25 @@ public class User implements Persistable {
         // return false;
     }
 
-    public static User login(String email, String password, JdbcTemplate template) {
+    public static User login(String email, String password) {
         String passwordHash = Util.hashPassword(password);
-        User currentUser = UserDao.login(email, passwordHash, template);
-        if (currentUser == null) {
+        User currentUser = UserDao.login(email, passwordHash);
+        if (currentUser == null)
             throw new IllegalArgumentException("Invalid email or password");
-        } else
+        else
             return currentUser;
     }
 
     // Method for registering a new user
-    public static User register(String username, String email, String password, JdbcTemplate template) {
-        if (UserDao.isExists(username, email, template)) {
+    public static User register(String username, String email, String password) {
+        if (UserDao.isExists(username, email)) {
             throw new IllegalArgumentException("Username or email already exists.");
         }
-        User newUser = UserDao.register(username, email, password, template);
-        if (newUser == null) {
+        User newUser = UserDao.register(username, email, password);
+        if (newUser == null)
             throw new IllegalArgumentException("Registration failed. User already exists or invalid data.");
-        } else {
+        else
             return newUser;
-        }
     }
 
     public byte[] getEdPublicKey() {

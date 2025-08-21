@@ -1,7 +1,11 @@
 package org.pexamax.acheron.views;
 
+import org.pexamax.acheron.dao.UserDao;
 import org.pexamax.acheron.model.Conversation;
 import org.pexamax.acheron.model.Message;
+import org.pexamax.acheron.model.User;
+
+import java.util.TreeSet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +15,7 @@ import java.util.List;
 
 public class ChatMainScreen extends JPanel {
     private final AppInterface app;
-    private final String currentUser;
+    private final User currentUser;
 
     private final DefaultListModel<String> convListModel = new DefaultListModel<>();
     private final JList<String> conversationList = new JList<>(convListModel);
@@ -23,14 +27,14 @@ public class ChatMainScreen extends JPanel {
     private final JTextField startUserField = new JTextField();
     private final JButton startChatButton = new JButton("Start Chat");
 
-    public ChatMainScreen(AppInterface app, String username) {
+    public ChatMainScreen(AppInterface app, User currentUser) {
         this.app = app;
-        this.currentUser = username;
+        this.currentUser = currentUser;
         setLayout(new BorderLayout());
 
         // LEFT PANEL (1/4): user header + conversation list + start conversation
         JPanel left = new JPanel(new BorderLayout());
-        JLabel userLabel = new JLabel("Logged in as: " + currentUser, SwingConstants.CENTER);
+        JLabel userLabel = new JLabel("Logged in as: " + currentUser.getUsername(), SwingConstants.CENTER);
         userLabel.setFont(userLabel.getFont().deriveFont(Font.BOLD, 14f));
         left.add(userLabel, BorderLayout.NORTH);
 
@@ -95,7 +99,7 @@ public class ChatMainScreen extends JPanel {
         convListModel.clear();
         TreeSet<Conversation> conversations = Conversation.retrieveConversations();
         for (Conversation c : conversations)
-            convListModel.addElement(c.getPeer(app.getCurrentUser()));
+            convListModel.addElement(c.getPeer(currentUser));
     }
 
     private void loadSelectedConversation() {
@@ -103,9 +107,9 @@ public class ChatMainScreen extends JPanel {
         messagesArea.setText("");
         if (peer == null)
             return;
-        Conversation c = Conversation.getConversationByPeerName(peer);
-        for (Message m : c.getMessages())
-            messagesArea.append(m.getSender() + ": " + m.getText() + "\n");
+        Conversation c = Conversation.getConversationByPeerName(currentUser, peer);
+        for (Message m : c.retrieveMessages(currentUser, 20))
+            messagesArea.append(m.getSenderID() + ": " + m.getContent() + "\n");
         messagesArea.setCaretPosition(messagesArea.getDocument().getLength());
     }
 
@@ -113,12 +117,17 @@ public class ChatMainScreen extends JPanel {
         String peer = startUserField.getText().trim();
         if (peer.isEmpty())
             return;
-        var store = InMemoryStore.getInstance();
-        if (store.findUserByUsername(peer) == null) {
+
+        if (UserDao.getByUsername(peer) == null) {
             JOptionPane.showMessageDialog(this, "User '" + peer + "' not found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        store.getOrCreateConversation(currentUser, peer);
+
+        Conversation newConversation = new Conversation(
+                currentUser.getUserID(),
+                UserDao.getByUsername(peer).getUserID());
+        newConversation.save(); // Save the new conversation to the database
+
         refreshConversationList();
         conversationList.setSelectedValue(peer, true);
         startUserField.setText("");
@@ -129,14 +138,14 @@ public class ChatMainScreen extends JPanel {
         String peer = conversationList.getSelectedValue();
         if (text.isEmpty() || peer == null)
             return;
-        Conversation conv = Conversation.getConversationByPeerName(peer);
+        Conversation conv = Conversation.getConversationByPeerName(currentUser, peer);
         conv.sendMessage(new Message(
-                conv.getConversationID(),
-                conv.getDestructTime(),
-                app.getCurrentUser().getID(),
+                conv.getID(),
+                conv.getDestructTimer(),
+                currentUser.getUserID(),
                 "text",
                 text.getBytes(),
-                app.getCurrentUser().getPrivateKey(),
+                currentUser.getEdPrivateKey(),
                 conv.getSymmetricKey()));
         messageField.setText("");
         loadSelectedConversation();

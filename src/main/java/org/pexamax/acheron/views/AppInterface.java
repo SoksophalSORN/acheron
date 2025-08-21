@@ -1,5 +1,7 @@
 package org.pexamax.acheron.views;
 
+import org.pexamax.acheron.model.User;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -38,8 +40,8 @@ public class AppInterface extends JFrame {
     }
 
     // Called by login/signup panels when authentication succeeds.
-    public void showChatScreen(String username) {
-        ChatMainScreen chat = new ChatMainScreen(this, username);
+    public void showChatScreen() {
+        ChatMainScreen chat = new ChatMainScreen(this, currentUser);
         mainPanel.add(chat, "chat");
         cardLayout.show(mainPanel, "chat");
     }

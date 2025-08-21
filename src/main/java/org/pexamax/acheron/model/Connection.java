@@ -23,7 +23,7 @@ public abstract class Connection {
         setInitTimestamp(timestamp);
     }
 
-    protected long getID() {
+    public long getID() {
         return ID;
     }
 

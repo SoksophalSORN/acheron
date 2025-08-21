@@ -1,6 +1,6 @@
 package org.pexamax.acheron.views;
 
-import com.example.chatapp.model.User;
+import org.pexamax.acheron.model.User;
 
 import org.pexamax.acheron.dao.UserDao;
 
@@ -93,6 +93,6 @@ public class SignupPanel extends JPanel {
         app.setCurrentUser(user);
 
         errorLabel.setText("");
-        app.showChatScreen(username);
+        app.showChatScreen();
     }
 }

@@ -77,13 +77,13 @@ public class LoginPanel extends JPanel {
         }
 
         User user = UserDao.login(email, password);
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null) {
             errorLabel.setText("Invalid email or password.");
             return;
         }
         app.setCurrentUser(user);
 
         errorLabel.setText("");
-        app.showChatScreen(user.getUsername());
+        app.showChatScreen();
     }
 }

@@ -38,6 +38,7 @@ public class Conversation extends Connection implements Persistable {
         setSymmetricKey(Util.utf8ToBytes("sharedSecret")); // This should be generated securely
         setBlockerID(0); // No blocker initially
         setDestructTimer(0); // No destruct timer initially
+        conversations.add(this);
     }
 
     // For retrieving data from the database
@@ -61,9 +62,9 @@ public class Conversation extends Connection implements Persistable {
         this.setDestructTimer(destructTimer);
     }
 
-    public static Conversation getConversationByPeerName(String peerName) {
+    public static Conversation getConversationByPeerName(User currentUser, String peerName) {
         for (Conversation convo : conversations) {
-            if (convo.getPeer(app.getCurrentUser()).equals(peerName)) {
+            if (convo.getPeer(currentUser).equals(peerName)) {
                 return convo;
             }
         }
@@ -71,29 +72,26 @@ public class Conversation extends Connection implements Persistable {
     }
 
     public String getPeer(User currentUser) {
-        if (currentUser.getID() == getInitiatorID())
+        if (currentUser.getUserID() == getInitiatorID())
             return UserDao.getByID(getReceiverID()).getUsername();
         else
             return UserDao.getByID(getInitiatorID()).getUsername();
     }
 
-    // Fetch messages for the current conversation
-    // public void retrieveMessages(int limit) {
-    // QueryTemplate template = new QueryTemplate();
-    // MessageDao.retrieveMessages(this.getInitiatorID(), 20, messages,
-    // symmetricKey, template);
-    // }
-
-    public void displayMessages() {
-        for (Message message : messages) {
-            System.out.println(message.toString());
-        }
+    public LinkedList<Message> retrieveMessages(User user, int limit) {
+        MessageDao.retrieveMessages(this.getID(), 20, messages,
+                symmetricKey, user.getEdPrivateKey());
+        return messages;
     }
 
     private void setHidden(boolean hidden) {
         if (this.hidden == hidden)
             return;
         this.hidden = hidden;
+    }
+
+    public byte[] getSymmetricKey() {
+        return symmetricKey;
     }
 
     private void setSymmetricKey(byte[] sharedSecret) {
@@ -152,10 +150,6 @@ public class Conversation extends Connection implements Persistable {
         return conversations;
     }
 
-    public static void listConversations(boolean hidden) {
-        // List all visible/hidden conversations for the user
-    }
-
     public static void selectConversation(int index, boolean hidden) {
         // Select the conversation at the specified index
         // Display the messages in the conversation
@@ -174,14 +168,15 @@ public class Conversation extends Connection implements Persistable {
         return false;
     }
 
-    public sendMessage(Message message) {
+    public boolean sendMessage(Message message) {
         // Send a message to the conversation
         // Add the message to the messages collection
         // Update the lastMessageSentTimestamp
         // Insert the message to the database
         messages.add(message);
         setLastMessageSentTimestamp(Instant.now());
-        MessageDao.saveMessage(message, symmetricKey);
+        MessageDao.saveMessage(message);
+        return false; // Return true if the message was sent successfully, false otherwise
     }
 
     protected boolean deleteConnection() {
