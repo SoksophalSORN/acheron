@@ -17,6 +17,8 @@ public class SignupPanel extends JPanel {
     private final JPasswordField passwordField = new JPasswordField(20);
     private final JLabel errorLabel = new JLabel("", SwingConstants.CENTER);
 
+    private UserDao userDao;
+
     public SignupPanel(AppInterface app) {
         this.app = app;
         setLayout(new GridBagLayout());
@@ -75,6 +77,13 @@ public class SignupPanel extends JPanel {
         passwordField.addActionListener(this::signup);
     }
 
+    public void setUserDao(UserDao userDao) {
+        if (userDao == null) {
+            throw new IllegalArgumentException("UserDao cannot be null");
+        }
+        this.userDao = userDao;
+    }
+
     private void signup(ActionEvent e) {
         String username = usernameField.getText().trim();
         String email = emailField.getText().trim();
@@ -85,7 +94,7 @@ public class SignupPanel extends JPanel {
             return;
         }
 
-        User user = UserDao.register(username, email, password);
+        User user = userDao.register(username, email, password);
         if (user == null) {
             errorLabel.setText("Signup failed. Username or email may already be taken.");
             return;

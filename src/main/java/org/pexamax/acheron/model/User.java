@@ -1,11 +1,8 @@
 package org.pexamax.acheron.model;
 
 import org.pexamax.acheron.Util;
-import org.pexamax.acheron.dao.UserDao;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public class User implements Persistable {
 
@@ -27,8 +24,7 @@ public class User implements Persistable {
         setEmail(email);
         setEmailVerified(emailVerified);
         setEdPublicKey(EdPublicKey);
-        String privateKey = Util.bytesToBase64(Util.decryptPrivateKey(password, encEdPrivateKey));
-        System.out.println("Private Key: " + privateKey);
+        setEdPrivateKey(Util.decryptPrivateKey(password, encEdPrivateKey));
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
         setXPublicKey(Util.getX25519PublicKey(X25519KeyPair));
         setXPrivateKey(Util.getX25519PrivateKey(X25519KeyPair));
@@ -107,14 +103,14 @@ public class User implements Persistable {
         return username;
     }
 
-    public boolean changeUsername(String username) {
-        // if (username exists in the database) { return false; }
-        // update username in the database
-        // this.username = username;
-        return true;
-        // }
-        // return false;
-    }
+    // public boolean changeUsername(String username) {
+    //     // if (username exists in the database) { return false; }
+    //     // update username in the database
+    //     // this.username = username;
+    //     return true;
+    //     // }
+    //     // return false;
+    // }
 
     public String getEmail() {
         return email;
@@ -133,26 +129,26 @@ public class User implements Persistable {
         // return false;
     }
 
-    public static User login(String email, String password) {
-        String passwordHash = Util.hashPassword(password);
-        User currentUser = UserDao.login(email, passwordHash);
-        if (currentUser == null)
-            throw new IllegalArgumentException("Invalid email or password");
-        else
-            return currentUser;
-    }
-
-    // Method for registering a new user
-    public static User register(String username, String email, String password) {
-        if (UserDao.isExists(username, email)) {
-            throw new IllegalArgumentException("Username or email already exists.");
-        }
-        User newUser = UserDao.register(username, email, password);
-        if (newUser == null)
-            throw new IllegalArgumentException("Registration failed. User already exists or invalid data.");
-        else
-            return newUser;
-    }
+    // public static User login(String email, String password) {
+    //     String passwordHash = Util.hashPassword(password);
+    //     User currentUser = UserDao.login(email, passwordHash);
+    //     if (currentUser == null)
+    //         throw new IllegalArgumentException("Invalid email or password");
+    //     else
+    //         return currentUser;
+    // }
+    //
+    // // Method for registering a new user
+    // public static User register(String username, String email, String password) {
+    //     if (UserDao.isExists(username, email)) {
+    //         throw new IllegalArgumentException("Username or email already exists.");
+    //     }
+    //     User newUser = UserDao.register(username, email, password);
+    //     if (newUser == null)
+    //         throw new IllegalArgumentException("Registration failed. User already exists or invalid data.");
+    //     else
+    //         return newUser;
+    // }
 
     public byte[] getEdPublicKey() {
         return this.EdPublicKey;

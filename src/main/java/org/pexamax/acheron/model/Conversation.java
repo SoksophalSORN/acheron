@@ -62,20 +62,20 @@ public class Conversation extends Connection implements Persistable {
         this.setDestructTimer(destructTimer);
     }
 
-    public static Conversation getConversationByPeerName(User currentUser, String peerName) {
+    public static Conversation getConversationByPeerName(User currentUser, String peerName, UserDao userDao) {
         for (Conversation convo : conversations) {
-            if (convo.getPeer(currentUser).equals(peerName)) {
+            if (convo.getPeer(currentUser, userDao).equals(peerName)) {
                 return convo;
             }
         }
         return null; // No conversation found with the given peer name
     }
 
-    public String getPeer(User currentUser) {
+    public String getPeer(User currentUser, UserDao userDao) {
         if (currentUser.getUserID() == getInitiatorID())
-            return UserDao.getByID(getReceiverID()).getUsername();
+            return userDao.getByID(getReceiverID()).getUsername();
         else
-            return UserDao.getByID(getInitiatorID()).getUsername();
+            return userDao.getByID(getInitiatorID()).getUsername();
     }
 
     public LinkedList<Message> retrieveMessages(User user, int limit) {

@@ -27,6 +27,8 @@ public class ChatMainScreen extends JPanel {
     private final JTextField startUserField = new JTextField();
     private final JButton startChatButton = new JButton("Start Chat");
 
+    private UserDao userDao;
+
     public ChatMainScreen(AppInterface app, User currentUser) {
         this.app = app;
         this.currentUser = currentUser;
@@ -95,11 +97,17 @@ public class ChatMainScreen extends JPanel {
         });
     }
 
+    public void setUserDao(UserDao userDao) {
+        if (this.userDao != null)
+            this.userDao = userDao;
+        else throw new IllegalStateException("UserDao can't be null");
+    }
+
     private void refreshConversationList() {
         convListModel.clear();
         TreeSet<Conversation> conversations = Conversation.retrieveConversations();
         for (Conversation c : conversations)
-            convListModel.addElement(c.getPeer(currentUser));
+            convListModel.addElement(c.getPeer(currentUser, userDao));
     }
 
     private void loadSelectedConversation() {
@@ -107,7 +115,7 @@ public class ChatMainScreen extends JPanel {
         messagesArea.setText("");
         if (peer == null)
             return;
-        Conversation c = Conversation.getConversationByPeerName(currentUser, peer);
+        Conversation c = Conversation.getConversationByPeerName(currentUser, peer, userDao);
         for (Message m : c.retrieveMessages(currentUser, 20))
             messagesArea.append(m.getSenderID() + ": " + m.getContent() + "\n");
         messagesArea.setCaretPosition(messagesArea.getDocument().getLength());
@@ -118,14 +126,14 @@ public class ChatMainScreen extends JPanel {
         if (peer.isEmpty())
             return;
 
-        if (UserDao.getByUsername(peer) == null) {
+        if (userDao.getByUsername(peer) == null) {
             JOptionPane.showMessageDialog(this, "User '" + peer + "' not found.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         Conversation newConversation = new Conversation(
                 currentUser.getUserID(),
-                UserDao.getByUsername(peer).getUserID());
+                userDao.getByUsername(peer).getUserID());
         newConversation.save(); // Save the new conversation to the database
 
         refreshConversationList();
@@ -138,7 +146,7 @@ public class ChatMainScreen extends JPanel {
         String peer = conversationList.getSelectedValue();
         if (text.isEmpty() || peer == null)
             return;
-        Conversation conv = Conversation.getConversationByPeerName(currentUser, peer);
+        Conversation conv = Conversation.getConversationByPeerName(currentUser, peer, userDao);
         conv.sendMessage(new Message(
                 conv.getID(),
                 conv.getDestructTimer(),

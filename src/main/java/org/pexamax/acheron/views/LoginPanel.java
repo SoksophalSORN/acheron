@@ -14,6 +14,8 @@ public class LoginPanel extends JPanel {
     private final JPasswordField passwordField = new JPasswordField(20);
     private final JLabel errorLabel = new JLabel("", SwingConstants.CENTER);
 
+    private UserDao userDao;
+
     public LoginPanel(AppInterface app) {
         this.app = app;
         setLayout(new GridBagLayout());
@@ -67,6 +69,11 @@ public class LoginPanel extends JPanel {
         passwordField.addActionListener(this::login);
     }
 
+    public void setUserDao(UserDao userDao) {
+        if (userDao != null) this.userDao = userDao;
+        else throw new IllegalArgumentException("UserDao cannot be null");
+    }
+
     private void login(ActionEvent e) {
         String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword());
@@ -76,7 +83,7 @@ public class LoginPanel extends JPanel {
             return;
         }
 
-        User user = UserDao.login(email, password);
+        User user = userDao.login(email, password);
         if (user == null) {
             errorLabel.setText("Invalid email or password.");
             return;

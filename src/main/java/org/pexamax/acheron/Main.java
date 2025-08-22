@@ -2,7 +2,7 @@ package org.pexamax.acheron;
 
 import org.pexamax.acheron.views.AppInterface;
 
-import org.pexamax.acheron.dao.QueryTemplate;
+import org.pexamax.acheron.dao.UserDao;
 
 import org.pexamax.acheron.model.User;
 
@@ -18,21 +18,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication
 public class Main {
 
-    private static JdbcTemplate jdbcTemplate;
-
     public static void main(String[] args) {
-        QueryTemplate.set(jdbcTemplate);
-
         User user = null;
         SwingUtilities.invokeLater(() -> new AppInterface(user).setVisible(true));
+        ApplicationContext context = SpringApplication.run(Main.class, args);
+        UserDao userDao = context.getBean(UserDao.class);
 
-        SpringApplication.run(Main.class, args);
     }
 }
