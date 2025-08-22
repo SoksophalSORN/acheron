@@ -28,9 +28,17 @@ public class Main {
 
     public static void main(String[] args) {
         User user = null;
-        SwingUtilities.invokeLater(() -> new AppInterface(user).setVisible(true));
+        // SwingUtilities.invokeLater(() -> new AppInterface(user).setVisible(true));
+        final AppInterface[] appInterface = new AppInterface[1];
+
+        SwingUtilities.invokeLater(() -> {
+            // Create the instance and store it in the array
+            appInterface[0] = new AppInterface(user);
+            appInterface[0].setVisible(true);
+        });
         ApplicationContext context = SpringApplication.run(Main.class, args);
         UserDao userDao = context.getBean(UserDao.class);
+        appInterface[0].setUserDao(userDao);
 
     }
 }
