@@ -2,7 +2,7 @@ package org.pexamax.acheron.views;
 
 import org.pexamax.acheron.model.User;
 
-import org.pexamax.acheron.dao.UserDao;
+import org.pexamax.acheron.service.UserService;
 
 import javax.swing.*;
 
@@ -17,7 +17,7 @@ public class SignupPanel extends JPanel {
     private final JPasswordField passwordField = new JPasswordField(20);
     private final JLabel errorLabel = new JLabel("", SwingConstants.CENTER);
 
-    private UserDao userDao;
+    private UserService userService;
 
     public SignupPanel(AppInterface app) {
         this.app = app;
@@ -77,11 +77,11 @@ public class SignupPanel extends JPanel {
         passwordField.addActionListener(this::signup);
     }
 
-    public void setUserDao(UserDao userDao) {
-        if (userDao == null) {
-            throw new IllegalArgumentException("UserDao cannot be null");
+    public void setUserService(UserService userService) {
+        if (userService == null) {
+            throw new IllegalArgumentException("UserService cannot be null");
         }
-        this.userDao = userDao;
+        this.userService = userService;
     }
 
     private void signup(ActionEvent e) {
@@ -94,7 +94,7 @@ public class SignupPanel extends JPanel {
             return;
         }
 
-        User user = userDao.register(username, email, password);
+        User user = userService.register(username, email, password);
         if (user == null) {
             errorLabel.setText("Signup failed. Username or email may already be taken.");
             return;

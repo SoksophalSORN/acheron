@@ -11,11 +11,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private final UserDao UserDao;
+    private final UserDao userDao;
 
     // Dependency injection of UserDao -- by Springboot
     public UserService(UserDao userDao) {
-        this.UserDao = userDao;
+        this.userDao = userDao;
+    }
+
+    public User getByUsername(String username) {
+        User user = userDao.getByUsername(username);
+        if (user == null)
+            throw new IllegalArgumentException("User not found");
+        else
+            return user;
+    }
+
+    public User getByID(long userID) {
+        User user = userDao.getByID(userID);
+        if (user == null)
+            throw new IllegalArgumentException("User not found");
+        else
+            return user;
     }
 
     public boolean changeUsername(String username) {
@@ -41,8 +57,7 @@ public class UserService {
     }
 
     public User login(String email, String password) {
-        String passwordHash = Util.hashPassword(password);
-        User currentUser = UserDao.login(email, passwordHash);
+        User currentUser = userDao.login(email, password);
         if (currentUser == null)
             throw new IllegalArgumentException("Invalid email or password");
         else
@@ -51,14 +66,20 @@ public class UserService {
 
     // Method for registering a new user
     public User register(String username, String email, String password) {
-        if (UserDao.isExists(username, email)) {
+        if (userDao.isExists(username, email)) {
             throw new IllegalArgumentException("Username or email already exists.");
         }
-        User newUser = UserDao.register(username, email, password);
+        User newUser = userDao.register(username, email, password);
         if (newUser == null)
             throw new IllegalArgumentException("Registration failed. User already exists or invalid data.");
         else
             return newUser;
+    }
+
+    public boolean deleteUser(long userID, String password) {
+        if (userDao.deleteUser(userID, password)) {
+            return true;
+        } else throw new IllegalArgumentException("User deletion failed. You may not be the user.");
     }
 
     public byte[] getUserEdPublicKey(long userID) {

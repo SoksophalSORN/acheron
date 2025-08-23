@@ -2,6 +2,7 @@ package org.pexamax.acheron.views;
 
 import org.pexamax.acheron.model.User;
 import org.pexamax.acheron.dao.UserDao;
+import org.pexamax.acheron.service.UserService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,12 +33,12 @@ public class AppInterface extends JFrame {
         cardLayout.show(mainPanel, "login");
     }
 
-    public void setUserDao(UserDao userDao) {
-        if (userDao == null) {
+    public void setUserService(UserService userService) {
+        if (userService == null) {
             throw new IllegalArgumentException("UserDao cannot be null");
         }
-        loginPanel.setUserDao(userDao);
-        signupPanel.setUserDao(userDao);
+        loginPanel.setUserService(userService);
+        signupPanel.setUserService(userService);
     }
 
     public User getCurrentUser() {

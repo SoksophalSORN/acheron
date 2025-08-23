@@ -1,6 +1,7 @@
 package org.pexamax.acheron.views;
 
 import org.pexamax.acheron.dao.UserDao;
+import org.pexamax.acheron.service.UserService;
 import org.pexamax.acheron.model.Conversation;
 import org.pexamax.acheron.model.Message;
 import org.pexamax.acheron.model.User;
@@ -28,6 +29,7 @@ public class ChatMainScreen extends JPanel {
     private final JButton startChatButton = new JButton("Start Chat");
 
     private UserDao userDao;
+    private UserService userService;
 
     public ChatMainScreen(AppInterface app, User currentUser) {
         this.app = app;
@@ -98,9 +100,18 @@ public class ChatMainScreen extends JPanel {
     }
 
     public void setUserDao(UserDao userDao) {
-        if (this.userDao != null)
+        if (userDao != null)
             this.userDao = userDao;
         else throw new IllegalStateException("UserDao can't be null");
+    }
+
+    public void setUserService(UserService userService) {
+        if (userService != null) {
+            this.userService = userService;
+        } else {
+            throw new IllegalStateException("UserService can't be null");
+            
+        }
     }
 
     private void refreshConversationList() {

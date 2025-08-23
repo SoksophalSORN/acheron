@@ -1,7 +1,7 @@
 package org.pexamax.acheron.views;
 
 import org.pexamax.acheron.model.User;
-import org.pexamax.acheron.dao.UserDao;
+import org.pexamax.acheron.service.UserService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +14,7 @@ public class LoginPanel extends JPanel {
     private final JPasswordField passwordField = new JPasswordField(20);
     private final JLabel errorLabel = new JLabel("", SwingConstants.CENTER);
 
-    private UserDao userDao;
+    private UserService userService;
 
     public LoginPanel(AppInterface app) {
         this.app = app;
@@ -69,9 +69,9 @@ public class LoginPanel extends JPanel {
         passwordField.addActionListener(this::login);
     }
 
-    public void setUserDao(UserDao userDao) {
-        if (userDao != null) this.userDao = userDao;
-        else throw new IllegalArgumentException("UserDao cannot be null");
+    public void setUserService(UserService userService) {
+        if (userService != null) this.userService = userService;
+        else throw new IllegalArgumentException("UserService cannot be null");
     }
 
     private void login(ActionEvent e) {
@@ -83,7 +83,7 @@ public class LoginPanel extends JPanel {
             return;
         }
 
-        User user = userDao.login(email, password);
+        User user = userService.login(email, password);
         if (user == null) {
             errorLabel.setText("Invalid email or password.");
             return;

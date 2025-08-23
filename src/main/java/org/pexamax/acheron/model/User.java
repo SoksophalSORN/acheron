@@ -16,7 +16,7 @@ public class User implements Persistable {
     private byte[] XPublicKey;
     private byte[] XPrivateKey;
 
-    // For retrieving user data
+    // For login
     public User(long userID, String username, String email, String password, boolean emailVerified,
             byte[] EdPublicKey, byte[] encEdPrivateKey) {
         setUserID(userID);
@@ -40,6 +40,15 @@ public class User implements Persistable {
         AsymmetricCipherKeyPair X25519KeyPair = Util.generateX25519KeyPair(this.EdPrivateKey);
         setXPublicKey(Util.getX25519PublicKey(X25519KeyPair));
         setXPrivateKey(Util.getX25519PrivateKey(X25519KeyPair));
+    }
+
+    // For loading existing user
+    public User(long userID, String username, String email, boolean emailVerified, byte[] EdPublicKey) {
+        setUserID(userID);
+        setUsername(username);
+        setEmail(email);
+        setEmailVerified(emailVerified);
+        setEdPublicKey(EdPublicKey);
     }
 
     private void setUserID(long userID) {
@@ -188,5 +197,11 @@ public class User implements Persistable {
     public void save() {
         // Save user data to the database
         // This method should save the current state of the user object to the database
+    }
+
+    @Override
+    public String toString() {
+        return this.getUserID() + "\t" + this.getUsername() + "\t" + this.getEmail() + "\t" + this.isEmailVerified()
+            + "\t" + Util.bytesToBase64(this.getEdPublicKey());
     }
 }
